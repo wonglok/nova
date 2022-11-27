@@ -5,14 +5,13 @@ import {
   Table,
   WebSocketApi,
 } from "@serverless-stack/resources";
+import { GOOGLE_CLIENT_ID, PRODUCTION_SITE_URL } from "./Config";
 import { DistributionForBucket } from "./UGC";
 
-const GOOGLE_CLIENT_ID = `731023934508-nou9ruf23nu9h85s59gu7evr7qq7pkh9.apps.googleusercontent.com`;
-const SiteURL = `https://agape.town`;
-
 export function MyStack({ stack, app }: StackContext) {
-  let stage = app.stage;
-  let region = app.region;
+  const siteURL = PRODUCTION_SITE_URL;
+  const stage = app.stage;
+  const region = app.region;
 
   //------ UGC Bucekt and CDN ------//
   let ugc = new DistributionForBucket(stack, "UGC", {});
@@ -52,7 +51,7 @@ export function MyStack({ stack, app }: StackContext) {
   const auth = new Auth(stack, "auth", {
     authenticator: {
       environment: {
-        SiteURL: SiteURL,
+        SiteURL: siteURL,
         GOOGLE_CLIENT_ID: GOOGLE_CLIENT_ID,
       },
       handler: "functions/auth.handler",

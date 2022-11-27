@@ -5,10 +5,9 @@
   "scripts": {
     "start": "sst start",
     "build": "sst build",
-    "deploy": "npm run stage; npm run prod; sst start",
-    "frontend": "cd web; npm run build; cd ../;",
-    "prod": "npx sst deploy --stage prod",
-    "stage": "npx sst deploy --stage stage",
+    "deploy": "npm run deployTest; npm run deployProd; sst start",
+    "deployProd": "npx sst deploy --stage prod",
+    "deployTest": "npx sst deploy --stage test",
     "remove": "sst remove",
     "console": "sst console",
     "typecheck": "tsc --noEmit",

@@ -62,8 +62,6 @@ export function MyStack({ stack, app }: StackContext) {
     // PortalSiteURL: site.url,
     ApiEndpoint: api.url,
   });
-
-  //
 }
 
 //

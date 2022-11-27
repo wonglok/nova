@@ -5,7 +5,7 @@
   "scripts": {
     "start": "sst start",
     "build": "sst build",
-    "deploy": "npm run stage; npm run prod;",
+    "deploy": "npm run stage; npm run prod; sst start",
     "frontend": "cd web; npm run build; cd ../;",
     "prod": "npx sst deploy --stage prod",
     "stage": "npx sst deploy --stage stage",

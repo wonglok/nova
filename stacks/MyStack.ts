@@ -67,10 +67,6 @@ export function MyStack({ stack, app }: StackContext) {
 }
 
 //
-//
-// https://82xi9xvuu6.execute-api.ap-southeast-1.amazonaws.com/auth/google/authorize
-// https://82xi9xvuu6.execute-api.ap-southeast-1.amazonaws.com/auth/google/callback
-//
 // const site = new StaticSite(stack, "Site", {
 //   path: "web",
 //   buildCommand: "npm i; npm run build", // or "yarn build"

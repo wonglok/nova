@@ -28,7 +28,7 @@ declare module "@serverless-stack/node/auth" {
   }
 }
 
-const SiteURL = process.env.SiteURL || `https://agape.town`;
+const SiteURL = process.env.SiteURL || ``;
 const GOOGLE_CLIENT_ID: string = process.env.GOOGLE_CLIENT_ID || "";
 
 let WalletAdapter =

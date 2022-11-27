@@ -1,25 +1,10 @@
-import {
-  StackContext,
-  Api,
-  Auth,
-  StaticSite,
-  Table,
-} from "@serverless-stack/resources";
+import { StackContext, Api, Auth, Table } from "@serverless-stack/resources";
 import { DistributionForBucket } from "./UGC";
 
-export function MyStack({ stack, app }: StackContext) {
-  // const site = new StaticSite(stack, "Site", {
-  //   path: "web",
-  //   buildCommand: "npm i; npm run build", // or "yarn build"
-  //   buildOutput: "dist",
-  //   environment: {
-  //     VITE_APP_API_URL: api.url,
-  //   },
-  //   //  vite: {
-  //   //      types: "types/my-env.d.ts",
-  //   //    }
-  // });
+const GOOGLE_CLIENT_ID = `731023934508-nou9ruf23nu9h85s59gu7evr7qq7pkh9.apps.googleusercontent.com`;
+const SiteURL = `https://agape.town`;
 
+export function MyStack({ stack, app }: StackContext) {
   let stage = app.stage;
   let region = app.region;
 
@@ -55,9 +40,6 @@ export function MyStack({ stack, app }: StackContext) {
     },
   });
 
-  const GOOGLE_CLIENT_ID = `731023934508-nou9ruf23nu9h85s59gu7evr7qq7pkh9.apps.googleusercontent.com`;
-  const SiteURL = `https://agape.town`;
-
   const auth = new Auth(stack, "auth", {
     authenticator: {
       environment: {
@@ -88,3 +70,14 @@ export function MyStack({ stack, app }: StackContext) {
 // https://82xi9xvuu6.execute-api.ap-southeast-1.amazonaws.com/auth/google/authorize
 // https://82xi9xvuu6.execute-api.ap-southeast-1.amazonaws.com/auth/google/callback
 //
+// const site = new StaticSite(stack, "Site", {
+//   path: "web",
+//   buildCommand: "npm i; npm run build", // or "yarn build"
+//   buildOutput: "dist",
+//   environment: {
+//     VITE_APP_API_URL: api.url,
+//   },
+//   //  vite: {
+//   //      types: "types/my-env.d.ts",
+//   //    }
+// });

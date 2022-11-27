@@ -67,6 +67,7 @@ export function MyStack({ stack, app }: StackContext) {
 }
 
 //
+//
 // https://82xi9xvuu6.execute-api.ap-southeast-1.amazonaws.com/auth/google/authorize
 // https://82xi9xvuu6.execute-api.ap-southeast-1.amazonaws.com/auth/google/callback
 //
@@ -81,3 +82,5 @@ export function MyStack({ stack, app }: StackContext) {
 //   //      types: "types/my-env.d.ts",
 //   //    }
 // });
+//
+//

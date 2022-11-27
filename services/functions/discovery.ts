@@ -1,5 +1,4 @@
 import { APIGatewayProxyHandlerV2 } from "aws-lambda";
-
 export const handler: APIGatewayProxyHandlerV2 = async (event) => {
   let getStage = () => {
     if (process.env.SST_STAGE?.indexOf("sst-") === 0) {
@@ -15,12 +14,12 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
     statusCode: 200,
     headers: { "Content-Type": "text/plain" },
     body: JSON.stringify({
-      stage: `${getStage()}`,
       time: `${event.requestContext.time}`,
       services: {
-        //
-        stage,
-        domainName,
+        stageSST: process.env.SST_STAGE,
+        stageMode: stage,
+        envMode: `${getStage()}`,
+        apiDomain: domainName,
       },
     }),
   };

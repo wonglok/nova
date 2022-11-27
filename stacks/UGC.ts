@@ -10,9 +10,9 @@ export interface DistributionForBucket {
   bucket: s3.Bucket;
   distribution: cloudfront.Distribution;
   envInfo: {
-    bucketName: string;
-    cdnDomain: string;
-    bucketDomain: string;
+    ugcBucketName: string;
+    ugcCdnDomain: string;
+    ugcBucketDomain: string;
   };
 }
 
@@ -44,9 +44,9 @@ export class DistributionForBucket extends Construct {
     });
 
     this.envInfo = {
-      bucketName: this.bucket.bucketName,
-      cdnDomain: this.distribution.domainName,
-      bucketDomain: this.bucket.bucketDomainName,
+      ugcBucketName: this.bucket.bucketName,
+      ugcCdnDomain: this.distribution.domainName,
+      ugcBucketDomain: this.bucket.bucketDomainName,
     };
   }
 }

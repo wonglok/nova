@@ -16,6 +16,7 @@ export function MyStack({ stack, app }: StackContext) {
   //------ UGC Bucekt and CDN ------//
   let ugc = new DistributionForBucket(stack, "UGC", {});
 
+  //------ WebSocketApi Table ------//
   const connTable = new Table(stack, "Connections", {
     fields: {
       id: "string",
@@ -23,7 +24,6 @@ export function MyStack({ stack, app }: StackContext) {
     primaryIndex: { partitionKey: "id" },
   });
 
-  // Create the WebSocket API
   const metaApi = new WebSocketApi(stack, "MetaApi", {
     defaults: {
       function: {
@@ -51,7 +51,7 @@ export function MyStack({ stack, app }: StackContext) {
   const auth = new Auth(stack, "auth", {
     authenticator: {
       environment: {
-        SiteURL: siteURL,
+        SITE_URL: siteURL,
         GOOGLE_CLIENT_ID: GOOGLE_CLIENT_ID,
       },
       handler: "functions/auth.handler",

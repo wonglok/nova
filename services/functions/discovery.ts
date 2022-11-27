@@ -9,6 +9,8 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
     }
   };
 
+  const { stage, domainName } = event.requestContext;
+
   return {
     statusCode: 200,
     headers: { "Content-Type": "text/plain" },
@@ -17,6 +19,8 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
       time: `${event.requestContext.time}`,
       services: {
         //
+        stage,
+        domainName,
       },
     }),
   };

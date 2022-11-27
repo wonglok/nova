@@ -34,7 +34,7 @@ export function MyStack({ stack, app }: StackContext) {
     routes: {
       $connect: "functions/socket-connect.main",
       $disconnect: "functions/socket-disconnect.main",
-      sendmessage: "functions/socket-sendMessage.main",
+      $default: "functions/socket-sendMessage.main",
     },
     accessLog: false,
   });

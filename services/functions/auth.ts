@@ -30,6 +30,7 @@ declare module "@serverless-stack/node/auth" {
 
 const SITE_URL = process.env.SITE_URL || ``;
 const GOOGLE_CLIENT_ID: string = process.env.GOOGLE_CLIENT_ID || "";
+let localURL = process.env.LOCAL_SITE_URL || `https://wonglok.ap.ngrok.io`;
 
 let WalletAdapter =
   (_: any) => (): Promise<APIGatewayProxyStructuredResultV2> => {
@@ -85,9 +86,7 @@ let WalletAdapter =
 
           return resolve(
             Session.parameter({
-              redirect: process.env.IS_LOCAL
-                ? "http://localhost:3000"
-                : SITE_URL,
+              redirect: process.env.IS_LOCAL ? localURL : SITE_URL,
 
               // redirect: "http://127.0.0.1:5173",
               type: "user",
@@ -164,7 +163,7 @@ export const handler = AuthHandler({
         //
 
         return Session.parameter({
-          redirect: process.env.IS_LOCAL ? "http://localhost:3000" : SITE_URL,
+          redirect: process.env.IS_LOCAL ? localURL : SITE_URL,
 
           // redirect: "http://127.0.0.1:5173",
           type: "user",

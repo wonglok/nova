@@ -5,7 +5,11 @@ import {
   Table,
   WebSocketApi,
 } from "@serverless-stack/resources";
-import { GOOGLE_CLIENT_ID, PRODUCTION_SITE_URL } from "./Config";
+import {
+  GOOGLE_CLIENT_ID,
+  LOCAL_SITE_URL,
+  PRODUCTION_SITE_URL,
+} from "./Config";
 import { DistributionForBucket } from "./UGC";
 
 export function MyStack({ stack, app }: StackContext) {
@@ -53,6 +57,7 @@ export function MyStack({ stack, app }: StackContext) {
       environment: {
         SITE_URL: siteURL,
         GOOGLE_CLIENT_ID: GOOGLE_CLIENT_ID,
+        LOCAL_SITE_URL: LOCAL_SITE_URL,
       },
       handler: "functions/auth.handler",
     },

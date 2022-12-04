@@ -9,7 +9,9 @@
     "@serverless-stack/node": "^1.18.4",
     "aws-sdk": "^2.1261.0",
     "ethers": "^5.7.2",
-    "jose": "^4.11.1"
+    "jose": "^4.11.1",
+    "md5": "^2.3.0",
+    "moment": "^2.29.4"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.109"

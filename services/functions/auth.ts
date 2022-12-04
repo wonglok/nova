@@ -7,12 +7,14 @@ import {
 import {
   DynamoDBClient,
   PutItemCommand,
+  ScanCommand,
   // DeleteItemCommand,
   // ScanCommand,
 } from "@aws-sdk/client-dynamodb";
 import { marshall } from "@aws-sdk/util-dynamodb";
 import { Table } from "@serverless-stack/node/table";
 import {
+  useHeaders,
   // useHeaders,
   usePath,
   useQueryParam,
@@ -20,7 +22,8 @@ import {
 } from "@serverless-stack/node/api";
 import { APIGatewayProxyStructuredResultV2 } from "aws-lambda";
 import { utils } from "ethers";
-
+import moment from "moment";
+import { hashMD5 } from "../lib/md5.js";
 declare module "@serverless-stack/node/auth" {
   export interface SessionTypes {
     user: {
@@ -39,15 +42,16 @@ let GuestAdapter =
   (_: any) => (): Promise<APIGatewayProxyStructuredResultV2> => {
     return new Promise(async (resolve) => {
       let path = usePath();
-      // let headers = useHeaders();
-      // console.log(headers);
+      let headers = useHeaders();
+      let ip = headers["x-forwarded-for"] || getGuestID();
 
       if (
         path[0] === "auth" &&
         path[1] === "guest" &&
         path[2] === "authorize"
       ) {
-        const guestID = getGuestID();
+        const dt = moment().format("YYYY-MM-DD");
+        const guestID = hashMD5(ip + dt);
         const ddb = new DynamoDBClient({});
 
         await ddb.send(
@@ -59,6 +63,7 @@ let GuestAdapter =
               email: "",
               picture: "",
               name: "Guest",
+              timestamp: dt,
             }),
           })
         );

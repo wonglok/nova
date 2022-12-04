@@ -47,6 +47,22 @@ let GuestAdapter =
         path[1] === "guest" &&
         path[2] === "authorize"
       ) {
+        const guestID = getGuestID();
+        const ddb = new DynamoDBClient({});
+
+        await ddb.send(
+          new PutItemCommand({
+            TableName: Table.users.tableName,
+            Item: marshall({
+              tenantID: "guest",
+              userId: guestID,
+              email: "",
+              picture: "",
+              name: "Guest",
+            }),
+          })
+        );
+
         return resolve(
           Session.parameter({
             redirect: process.env.IS_LOCAL ? localURL : SITE_URL,
@@ -55,7 +71,7 @@ let GuestAdapter =
             type: "user",
             properties: {
               tenantID: "guest",
-              userID: getGuestID(),
+              userID: guestID,
               nonce: getGuestID(),
             },
           })

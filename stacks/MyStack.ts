@@ -42,12 +42,29 @@ export function MyStack({ stack, app }: StackContext) {
     accessLog: false,
   });
 
-  //------ Tablets ------//
+  //------ Tables ------//
   const usersTable = new Table(stack, "users", {
     fields: {
       userId: "string",
     },
     primaryIndex: { partitionKey: "userId" },
+  });
+
+  const invitationTable = new Table(stack, "invitation", {
+    fields: {
+      _id: "string",
+    },
+    primaryIndex: { partitionKey: "_id" },
+  });
+
+  const followingTable = new Table(stack, "following", {
+    fields: {
+      _id: "string", // randID
+      userID: "string",
+      followingUserID: "string",
+      followBackCache: "string",
+    },
+    primaryIndex: { partitionKey: "_id" },
   });
 
   //------ WebSocket API ------//

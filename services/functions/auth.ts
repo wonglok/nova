@@ -13,17 +13,20 @@ import {
 import { marshall } from "@aws-sdk/util-dynamodb";
 import { Table } from "@serverless-stack/node/table";
 import {
+  // useHeaders,
   usePath,
   useQueryParam,
   // useQueryParams,
 } from "@serverless-stack/node/api";
 import { APIGatewayProxyStructuredResultV2 } from "aws-lambda";
 import { utils } from "ethers";
+
 declare module "@serverless-stack/node/auth" {
   export interface SessionTypes {
     user: {
       userID: string;
       tenantID: string;
+      nonce: string;
     };
   }
 }
@@ -31,6 +34,44 @@ declare module "@serverless-stack/node/auth" {
 const SITE_URL = process.env.SITE_URL || ``;
 const GOOGLE_CLIENT_ID: string = process.env.GOOGLE_CLIENT_ID || "";
 let localURL = process.env.LOCAL_SITE_URL || `https://wonglok.ap.ngrok.io`;
+
+let GuestAdapter =
+  (_: any) => (): Promise<APIGatewayProxyStructuredResultV2> => {
+    return new Promise(async (resolve) => {
+      let path = usePath();
+      // let headers = useHeaders();
+      // console.log(headers);
+
+      if (
+        path[0] === "auth" &&
+        path[1] === "guest" &&
+        path[2] === "authorize"
+      ) {
+        return resolve(
+          Session.parameter({
+            redirect: process.env.IS_LOCAL ? localURL : SITE_URL,
+
+            // redirect: "http://127.0.0.1:5173",
+            type: "user",
+            properties: {
+              tenantID: "guest",
+              userID: getGuestID(),
+              nonce: getGuestID(),
+            },
+          })
+        );
+      } else {
+        resolve({
+          statusCode: 401,
+          body: JSON.stringify({
+            msg: "bad",
+          }),
+        });
+      }
+      // utils.verifyMessage(originalString, originalSignature);
+      //
+    });
+  };
 
 let WalletAdapter =
   (_: any) => (): Promise<APIGatewayProxyStructuredResultV2> => {
@@ -93,6 +134,7 @@ let WalletAdapter =
               properties: {
                 tenantID: "ethers",
                 userID: address,
+                nonce: getGuestID(),
               },
             })
           );
@@ -132,17 +174,19 @@ export const getGuestID = function () {
 
 export const handler = AuthHandler({
   providers: {
-    // guest: GuestAdapter({}),
+    guest: GuestAdapter({}),
     wallet: WalletAdapter({}),
     google: GoogleAdapter({
       mode: "oidc",
       clientID: GOOGLE_CLIENT_ID,
 
       onSuccess: async (tokenset) => {
+        //
         // return {
         //   statusCode: 200,
         //   body: JSON.stringify(tokenset.claims(), null, 4),
         // };
+        //
 
         const claims = tokenset.claims();
 
@@ -160,8 +204,6 @@ export const handler = AuthHandler({
           })
         );
 
-        //
-
         return Session.parameter({
           redirect: process.env.IS_LOCAL ? localURL : SITE_URL,
 
@@ -170,6 +212,7 @@ export const handler = AuthHandler({
           properties: {
             tenantID: "google",
             userID: claims.sub,
+            nonce: getGuestID(),
           },
         });
       },

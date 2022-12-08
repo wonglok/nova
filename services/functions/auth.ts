@@ -24,6 +24,7 @@ import { APIGatewayProxyStructuredResultV2 } from "aws-lambda";
 import { utils } from "ethers";
 import moment from "moment";
 import { hashMD5 } from "../lib/md5.js";
+
 declare module "@serverless-stack/node/auth" {
   export interface SessionTypes {
     user: {
@@ -33,6 +34,19 @@ declare module "@serverless-stack/node/auth" {
     };
   }
 }
+
+export const getGuestID = function () {
+  return (
+    "_guest_" +
+    Math.random().toString(36).substr(2, 9) +
+    Math.random().toString(36).substr(2, 9) +
+    Math.random().toString(36).substr(2, 9) +
+    Math.random().toString(36).substr(2, 9) +
+    Math.random().toString(36).substr(2, 9) +
+    Math.random().toString(36).substr(2, 9) +
+    Math.random().toString(36).substr(2, 9)
+  );
+};
 
 const SITE_URL = process.env.SITE_URL || ``;
 const GOOGLE_CLIENT_ID: string = process.env.GOOGLE_CLIENT_ID || "";
@@ -51,7 +65,7 @@ let GuestAdapter =
         path[2] === "authorize"
       ) {
         const dt = moment().format("YYYY-MM-DD");
-        const guestID = hashMD5(ip + dt);
+        const guestID = hashMD5(ip);
         const ddb = new DynamoDBClient({});
 
         await ddb.send(
@@ -179,19 +193,6 @@ let WalletAdapter =
       //
     });
   };
-
-export const getGuestID = function () {
-  return (
-    "_guest_" +
-    Math.random().toString(36).substr(2, 9) +
-    Math.random().toString(36).substr(2, 9) +
-    Math.random().toString(36).substr(2, 9) +
-    Math.random().toString(36).substr(2, 9) +
-    Math.random().toString(36).substr(2, 9) +
-    Math.random().toString(36).substr(2, 9) +
-    Math.random().toString(36).substr(2, 9)
-  );
-};
 
 export const handler = AuthHandler({
   providers: {

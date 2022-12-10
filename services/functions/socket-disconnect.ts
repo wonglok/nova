@@ -54,6 +54,7 @@ export const main: APIGatewayProxyHandler = async (event) => {
   let messageRoom = thisConnection?.room;
 
   const { stage, domainName } = event.requestContext;
+
   const apiG = new ApiGatewayManagementApi({
     endpoint: `${domainName}/${stage}`,
   });
@@ -80,7 +81,10 @@ export const main: APIGatewayProxyHandler = async (event) => {
         return postToConnection({
           apiG,
           id: item.id,
-          messageData: connections?.Items || [],
+          messageData: {
+            type: "clients",
+            data: connections?.Items || [],
+          },
         });
       })
     ).catch((e) => {

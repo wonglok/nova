@@ -67,8 +67,9 @@ export function MyStack({ stack, app }: StackContext) {
     primaryIndex: { partitionKey: "_id" },
   });
 
-  //------ WebSocket API ------//
+  const myTables = [usersTable, invitationTable, followingTable];
 
+  //------ WebSocket API ------//
   const auth = new Auth(stack, "auth", {
     authenticator: {
       environment: {
@@ -80,7 +81,6 @@ export function MyStack({ stack, app }: StackContext) {
     },
   });
 
-  //
   const api = new Api(stack, "api", {
     cors: {
       allowHeaders: ["*"],
@@ -94,7 +94,7 @@ export function MyStack({ stack, app }: StackContext) {
         environment: {
           ...ugc.envInfo,
         },
-        bind: [usersTable],
+        bind: [...myTables],
       },
     },
     routes: {

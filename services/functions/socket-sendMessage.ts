@@ -43,7 +43,7 @@ export const main: APIGatewayProxyHandler = async (event) => {
   const messageType = json.type;
   const messageRoom = json.room;
   const messageData = json.data;
-  const { stage, domainName } = event.requestContext;
+  const { stage, domainName, connectionId } = event.requestContext;
   const apiG = new ApiGatewayManagementApi({
     endpoint: `${domainName}/${stage}`,
   });
@@ -78,7 +78,10 @@ export const main: APIGatewayProxyHandler = async (event) => {
         return postToConnection({
           apiG,
           id: item.id,
-          messageData: connections?.Items || [],
+          messageData: {
+            type: "clients",
+            data: connections?.Items || [],
+          },
         });
       })
     ).catch((e) => {
@@ -106,7 +109,11 @@ export const main: APIGatewayProxyHandler = async (event) => {
         return postToConnection({
           apiG,
           id: item.id,
-          messageData: messageData,
+          messageData: {
+            type: "toRoom",
+            from: connectionId,
+            data: messageData,
+          },
         });
       })
     ).catch((e) => {

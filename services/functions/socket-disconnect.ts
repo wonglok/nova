@@ -50,7 +50,6 @@ export const main: APIGatewayProxyHandler = async (event) => {
     .promise()
     .then((e) => e.Item || {});
 
-  console.log(thisConnection);
   let messageRoom = thisConnection?.room;
 
   const { stage, domainName } = event.requestContext;
@@ -83,6 +82,7 @@ export const main: APIGatewayProxyHandler = async (event) => {
           id: item.id,
           messageData: {
             type: "clients",
+            myConnectionID: item.id,
             data: connections?.Items || [],
           },
         });

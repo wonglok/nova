@@ -80,6 +80,8 @@ export const main: APIGatewayProxyHandler = async (event) => {
           id: item.id,
           messageData: {
             type: "clients",
+
+            myConnectionID: item.id,
             data: connections?.Items || [],
           },
         });
@@ -111,6 +113,7 @@ export const main: APIGatewayProxyHandler = async (event) => {
           id: item.id,
           messageData: {
             type: "toRoom",
+            isMe: connectionId === item.id,
             from: connectionId,
             data: messageData,
           },

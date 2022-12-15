@@ -48,7 +48,7 @@ export const main: APIGatewayProxyHandler = async (event) => {
     endpoint: `${domainName}/${stage}`,
   });
 
-  if (messageType === "join" && messageRoom) {
+  async function join() {
     const params = {
       TableName: TableName,
       Item: {
@@ -91,7 +91,7 @@ export const main: APIGatewayProxyHandler = async (event) => {
     });
   }
 
-  if (messageType === "toRoom" && !!messageRoom) {
+  async function sendToRoom() {
     // Get all the connections
     const connections = await dynamoDb
       .scan({
@@ -122,6 +122,59 @@ export const main: APIGatewayProxyHandler = async (event) => {
     ).catch((e) => {
       console.error(e);
     });
+  }
+
+  async function walkInRoom() {
+    const params = {
+      TableName: TableName,
+      Item: {
+        id: event.requestContext.connectionId,
+        room: messageRoom,
+        walk: messageData,
+      },
+    };
+
+    await dynamoDb.put(params).promise();
+
+    // Get all the connections
+    const connections = await dynamoDb
+      .scan({
+        TableName,
+        ProjectionExpression: "id, room, walk",
+        //
+        FilterExpression: "room = :room",
+        ExpressionAttributeValues: {
+          ":room": messageRoom,
+        },
+      })
+      .promise();
+
+    // Iterate through all the connections
+    await Promise.all(
+      (connections?.Items || []).map((item) => {
+        return postToConnection({
+          apiG,
+          id: item.id,
+          messageData: {
+            type: "clients",
+
+            myConnectionID: item.id,
+            data: connections?.Items || [],
+          },
+        });
+      })
+    ).catch((e) => {
+      console.error(e);
+    });
+  }
+
+  ///
+  if (messageType === "join" && messageRoom) {
+    await join();
+  } else if (messageType === "toRoom" && messageRoom) {
+    await sendToRoom();
+  } else if (messageType === "walkInRoom" && messageRoom) {
+    await walkInRoom();
   }
 
   return { statusCode: 200, body: "Message sent" };

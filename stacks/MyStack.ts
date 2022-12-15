@@ -99,6 +99,8 @@ export function MyStack({ stack, app }: StackContext) {
     },
     routes: {
       "GET /": "functions/discovery.handler",
+      "GET /script": "functions/script.handler",
+      "POST /import-map": "functions/import-map.handler",
       "GET /session": "functions/session.handler",
     },
   });

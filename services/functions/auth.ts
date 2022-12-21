@@ -52,6 +52,63 @@ const SITE_URL = process.env.SITE_URL || ``;
 const GOOGLE_CLIENT_ID: string = process.env.GOOGLE_CLIENT_ID || "";
 let localURL = process.env.LOCAL_SITE_URL || `https://wonglok.ap.ngrok.io`;
 
+let LocalGuestAdapter =
+  (_: any) => (): Promise<APIGatewayProxyStructuredResultV2> => {
+    return new Promise(async (resolve) => {
+      let path = usePath();
+      let headers = useHeaders();
+      let ip = headers["x-forwarded-for"] || getGuestID();
+
+      if (
+        path[0] === "auth" &&
+        path[1] === "local" &&
+        path[2] === "authorize"
+      ) {
+        const dt = moment().format("YYYY-MM-DD");
+        const guestID = hashMD5(ip);
+        const ddb = new DynamoDBClient({});
+
+        await ddb.send(
+          new PutItemCommand({
+            TableName: Table.users.tableName,
+            Item: marshall({
+              tenantID: "guest",
+              userId: guestID,
+              email: "",
+              picture: "",
+              name: "Guest",
+              timestamp: dt,
+            }),
+          })
+        );
+
+        return resolve(
+          Session.parameter({
+            // redirect: process.env.IS_LOCAL ? localURL : SITE_URL,
+            redirect: process.env.IS_LOCAL ? `http://localhost:3000` : SITE_URL,
+
+            // redirect: "http://127.0.0.1:5173",
+            type: "user",
+            properties: {
+              tenantID: "guest",
+              userID: guestID,
+              nonce: getGuestID(),
+            },
+          })
+        );
+      } else {
+        resolve({
+          statusCode: 401,
+          body: JSON.stringify({
+            msg: "bad",
+          }),
+        });
+      }
+      // utils.verifyMessage(originalString, originalSignature);
+      //
+    });
+  };
+
 let GuestAdapter =
   (_: any) => (): Promise<APIGatewayProxyStructuredResultV2> => {
     return new Promise(async (resolve) => {
@@ -85,6 +142,7 @@ let GuestAdapter =
         return resolve(
           Session.parameter({
             redirect: process.env.IS_LOCAL ? localURL : SITE_URL,
+            // redirect: process.env.IS_LOCAL ? `http://localhost:3000` : SITE_URL,
 
             // redirect: "http://127.0.0.1:5173",
             type: "user",
@@ -196,6 +254,7 @@ let WalletAdapter =
 
 export const handler = AuthHandler({
   providers: {
+    local: LocalGuestAdapter({}),
     guest: GuestAdapter({}),
     wallet: WalletAdapter({}),
     google: GoogleAdapter({

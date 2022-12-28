@@ -50,12 +50,12 @@ export function MyStack({ stack, app }: StackContext) {
     primaryIndex: { partitionKey: "userId" },
   });
 
-  const invitationTable = new Table(stack, "invitation", {
-    fields: {
-      _id: "string",
-    },
-    primaryIndex: { partitionKey: "_id" },
-  });
+  // const invitationTable = new Table(stack, "invitation", {
+  //   fields: {
+  //     _id: "string",
+  //   },
+  //   primaryIndex: { partitionKey: "_id" },
+  // });
 
   const followingTable = new Table(stack, "following", {
     fields: {
@@ -67,7 +67,24 @@ export function MyStack({ stack, app }: StackContext) {
     primaryIndex: { partitionKey: "_id" },
   });
 
-  const myTables = [usersTable, invitationTable, followingTable];
+  const sitesTable = new Table(stack, "sites", {
+    fields: {
+      _id: "string", // randID
+      userID: "string",
+    },
+    primaryIndex: { partitionKey: "_id" },
+  });
+
+  const domainsTable = new Table(stack, "domains", {
+    fields: {
+      _id: "string", // randID
+      slug: "string", // host header
+      siteID: "string",
+    },
+    primaryIndex: { partitionKey: "_id" },
+  });
+
+  const myTables = [domainsTable, sitesTable, usersTable, followingTable];
 
   //------ WebSocket API ------//
   const auth = new Auth(stack, "auth", {
@@ -102,6 +119,7 @@ export function MyStack({ stack, app }: StackContext) {
       "GET /script": "functions/script.handler",
       "POST /import-map": "functions/import-map.handler",
       "GET /session": "functions/session.handler",
+      "POST /domain-of-sites": "functions/domain-of-sites.handler",
     },
   });
 

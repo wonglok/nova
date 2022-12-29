@@ -11,11 +11,12 @@ import { marshall, unmarshall } from "@aws-sdk/util-dynamodb";
 export const handler = ApiHandler(async () => {
   const body = useBody();
 
-  const json = JSON.parse(body || '{domain: ""}');
+  const reqBodyJson = JSON.parse(body || '{domain: ""}');
 
   //
-  // console.log(json.domain);
+  // console.log(reqBodyJson.domain);
   // // const session = useSession();
+  //
 
   // // // Check user is authenticated
   // // if (session.type !== "user") {
@@ -30,7 +31,7 @@ export const handler = ApiHandler(async () => {
     FilterExpression: "slug = :slug",
     // Define the expression attribute value, which are substitutes for the values you want to compare.
     ExpressionAttributeValues: {
-      ":slug": { S: json.domain },
+      ":slug": { S: reqBodyJson.domain },
     },
     // Set the projection expression, which the the attributes that you want.
     // ProjectionExpression: "slug, siteID",

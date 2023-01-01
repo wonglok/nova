@@ -23,7 +23,7 @@ export const handler = ApiHandler(async () => {
 
   const bodyText = useBody();
 
-  const bodyData = JSON.parse(bodyText || JSON.stringify({ slug: "" }));
+  const bodyData = JSON.parse(bodyText || JSON.stringify({ _id: "" }));
 
   const ddb = new DynamoDBClient({});
 
@@ -35,7 +35,7 @@ export const handler = ApiHandler(async () => {
     try {
       data = await ddb.send(
         new GetItemCommand({
-          TableName: Table.users.tableName,
+          TableName: Table.sites.tableName,
           Key: marshall({
             _id: bodyData._id,
           }),

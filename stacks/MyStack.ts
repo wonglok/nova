@@ -70,21 +70,13 @@ export function MyStack({ stack, app }: StackContext) {
   const sitesTable = new Table(stack, "sites", {
     fields: {
       _id: "string", // randID
+      slug: "string",
       userID: "string",
     },
     primaryIndex: { partitionKey: "_id" },
   });
 
-  const domainsTable = new Table(stack, "domains", {
-    fields: {
-      _id: "string", // randID
-      slug: "string", // host header
-      siteID: "string",
-    },
-    primaryIndex: { partitionKey: "_id" },
-  });
-
-  const myTables = [domainsTable, sitesTable, usersTable, followingTable];
+  const myTables = [sitesTable, usersTable, followingTable];
 
   //------ WebSocket API ------//
   const auth = new Auth(stack, "auth", {
@@ -120,6 +112,7 @@ export function MyStack({ stack, app }: StackContext) {
       "POST /import-map": "functions/import-map.handler",
       "GET /session": "functions/session.handler",
       "POST /domain-of-sites": "functions/domain-of-sites.handler",
+      "POST /site-id-taken": "functions/site-id-taken.handler",
     },
   });
 

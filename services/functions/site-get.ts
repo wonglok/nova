@@ -14,8 +14,6 @@ import { useSession } from "@serverless-stack/node/auth";
 // import slugify from "slugify";
 
 export const handler = ApiHandler(async () => {
-  let statusCode = 200;
-  let returnBody = JSON.stringify({});
   const session = useSession();
 
   // Check user is authenticated
@@ -32,34 +30,27 @@ export const handler = ApiHandler(async () => {
   try {
     //
 
-    let data = { Items: [] };
+    let data = { Item: {} };
+    let statusCode = 200;
     try {
-      // Set the parameters.
-      const Params = {
-        // Specify which items in the results are returned.
-        FilterExpression: "userID = :userID",
-        // Define the expression attribute value, which are substitutes for the values you want to compare.
-        ExpressionAttributeValues: {
-          ":userID": { S: session.properties.userID + "" },
-        },
-        // Set the projection expression, which the the attributes that you want.
-        // ProjectionExpression: "slug, siteID",
-        TableName: Table.sites.tableName,
-      };
-
-      data = await ddb.send(new ScanCommand(Params));
+      data = await ddb.send(
+        new GetItemCommand({
+          TableName: Table.users.tableName,
+          Key: marshall({
+            _id: bodyData._id,
+          }),
+        })
+      );
     } catch (err) {
       statusCode = 503;
       console.log("Error", err);
     }
 
-    let list = data.Items.map((it) => {
-      return unmarshall(it);
-    });
+    let item = unmarshall(data.Item!);
 
     return {
-      statusCode: 200,
-      body: JSON.stringify({ list }),
+      statusCode: statusCode,
+      body: JSON.stringify({ item }),
     };
   } catch (e) {
     return {

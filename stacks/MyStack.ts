@@ -120,6 +120,7 @@ export function MyStack({ stack, app }: StackContext) {
       //
       "POST /site-create": "functions/site-create.handler",
       "POST /site-recent": "functions/site-recent.handler",
+      "POST /site-get": "functions/site-get.handler",
     },
   });
 

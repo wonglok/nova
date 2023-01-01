@@ -220,7 +220,9 @@ let WalletAdapter =
 
           return resolve(
             Session.parameter({
-              redirect: process.env.IS_LOCAL ? localURL : SITE_URL,
+              redirect: process.env.IS_LOCAL
+                ? `http://localhost:3000`
+                : SITE_URL,
 
               // redirect: "http://127.0.0.1:5173",
               type: "user",

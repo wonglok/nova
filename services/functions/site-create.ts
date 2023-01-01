@@ -3,6 +3,7 @@ import { ApiHandler, useBody } from "@serverless-stack/node/api";
 // import { useSession } from "@serverless-stack/node/auth";
 import {
   DynamoDBClient,
+  GetItemCommand,
   PutItemCommand,
   // GetItemCommand,
   ScanCommand,
@@ -10,6 +11,7 @@ import {
 import { marshall, unmarshall } from "@aws-sdk/util-dynamodb";
 import { useSession } from "@serverless-stack/node/auth";
 import { v4 } from "uuid";
+import slugify from "slugify";
 
 export const handler = ApiHandler(async () => {
   let statusCode = 200;
@@ -25,27 +27,14 @@ export const handler = ApiHandler(async () => {
 
   const reqBodyJson = JSON.parse(body || '{slug: ""}');
 
-  //
-  // console.log(reqBodyJson.slug);
-  // // const session = useSession();
-  //
-
-  // // // Check user is authenticated
-  // // if (session.type !== "user") {
-  // //   throw new Error("Not authenticated");
-  // // }
-
-  // // unmarshall(data.Item!)
-
-  // Set the parameters.
-
   const ddb = new DynamoDBClient({});
 
-  let isOK = await checkTaken({ ddb, slug: reqBodyJson.slug });
-
-  if (!isOK) {
-    statusCode = 406;
-    returnBody = JSON.stringify({ reason: "name taken" });
+  if (session.properties.tenantID === "guest") {
+    statusCode = 403;
+    returnBody = JSON.stringify({
+      ok: false,
+      reason: "guest cannot create site",
+    });
 
     return {
       statusCode,
@@ -53,63 +42,107 @@ export const handler = ApiHandler(async () => {
     };
   }
 
-  let data = { Item: {} };
+  let slug = slugify(reqBodyJson.slug, "_");
+  let isOK = await checkTaken({ ddb, slug: slug });
+
+  if (!isOK) {
+    statusCode = 406;
+    returnBody = JSON.stringify({ ok: false, reason: "name taken" });
+
+    return {
+      statusCode,
+      body: returnBody,
+    };
+  }
+
+  let _id = v4() + "";
   try {
-    data = await ddb.send(
+    await ddb.send(
       new PutItemCommand({
         TableName: Table.sites.tableName,
         Item: marshall({
           //
 
-          _id: v4() + "",
+          _id: _id,
+          slug: slug,
+          userID: session.properties.userID,
+          createdAt: new Date().getTime(),
         }),
+      })
+    );
+  } catch (err) {
+    console.error(err);
+
+    statusCode = 406;
+    returnBody = JSON.stringify({
+      ok: false,
+      reason: "db error, cannot create site",
+    });
+
+    return {
+      statusCode,
+      body: returnBody,
+    };
+  }
+
+  try {
+    const data = await ddb.send(
+      new GetItemCommand({
+        TableName: Table.sites.tableName,
+        Key: marshall({
+          _id: _id,
+        }),
+      })
+    );
+
+    return {
+      statusCode,
+      body: JSON.stringify(unmarshall(data.Item!)),
+    };
+  } catch (err) {
+    console.error(err);
+
+    statusCode = 406;
+    returnBody = JSON.stringify({
+      ok: false,
+      reason: "db error, cannot get site",
+    });
+
+    console.error(console);
+    return {
+      statusCode,
+      body: returnBody,
+    };
+  }
+});
+
+async function checkTaken({ slug, ddb }) {
+  // Set the parameters.
+
+  let data = { Items: [] };
+  try {
+    data = await ddb.send(
+      new ScanCommand({
+        // Specify which items in the results are returned.
+        FilterExpression: "slug = :slug",
+        // Define the expression attribute value, which are substitutes for the values you want to compare.
+        ExpressionAttributeValues: {
+          ":slug": { S: slug },
+        },
+        // Set the projection expression, which the the attributes that you want.
+        // ProjectionExpression: "slug, siteID",
+        TableName: Table.sites.tableName,
       })
     );
   } catch (err) {
     console.log("Error", err);
   }
 
-  let myData = unmarshall(data.Item);
+  // let list = data.Items.map((it) => {
+  //   return unmarshall(it);
+  // });
 
-  //
-  return {
-    statusCode,
-    body: returnBody,
-  };
-});
-
-async function checkTaken({ slug, ddb }) {
-  // Set the parameters.
-  const Params = {
-    // Specify which items in the results are returned.
-    FilterExpression: "slug = :slug",
-    // Define the expression attribute value, which are substitutes for the values you want to compare.
-    ExpressionAttributeValues: {
-      ":slug": { S: slug },
-    },
-    // Set the projection expression, which the the attributes that you want.
-    // ProjectionExpression: "slug, siteID",
-    TableName: Table.sites.tableName,
-  };
-
-  // const ddb = new DynamoDBClient({});
-
-  let data = { Items: [] };
-  try {
-    data = await ddb.send(new ScanCommand(Params));
-  } catch (err) {
-    console.log("Error", err);
-  }
-
-  let list = data.Items.map((it) => {
-    return unmarshall(it);
-  });
-
-  let first = {
-    ok: list.length === 0,
-  };
-
-  return first.ok;
+  return data.Items.length === 0;
 }
 
 //

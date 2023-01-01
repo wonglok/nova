@@ -67,11 +67,14 @@ export function MyStack({ stack, app }: StackContext) {
     primaryIndex: { partitionKey: "_id" },
   });
 
+  //
+
   const sitesTable = new Table(stack, "sites", {
     fields: {
       _id: "string", // randID
       slug: "string",
       userID: "string",
+      createdAt: "string",
     },
     primaryIndex: { partitionKey: "_id" },
   });
@@ -113,6 +116,9 @@ export function MyStack({ stack, app }: StackContext) {
       "GET /session": "functions/session.handler",
       "POST /domain-of-sites": "functions/domain-of-sites.handler",
       "POST /site-id-taken": "functions/site-id-taken.handler",
+
+      //
+      "POST /site-create": "functions/site-create.handler",
     },
   });
 

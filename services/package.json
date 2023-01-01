@@ -13,7 +13,9 @@
     "md5": "^2.3.0",
     "moment": "^2.29.4",
     "npm-registry-fetch": "^14.0.3",
-    "pacote": "^15.0.7"
+    "pacote": "^15.0.7",
+    "slugify": "^1.6.5",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@jspm/generator": "^1.0.0-beta.38",

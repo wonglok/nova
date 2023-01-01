@@ -7,11 +7,15 @@ import {
   ScanCommand,
 } from "@aws-sdk/client-dynamodb";
 import { marshall, unmarshall } from "@aws-sdk/util-dynamodb";
+import slugify from "slugify";
 
 export const handler = ApiHandler(async () => {
   const body = useBody();
+  let statusCode = 200;
 
   const reqBodyJson = JSON.parse(body || '{slug: ""}');
+
+  let slug = slugify(reqBodyJson.slug, "_");
 
   //
   // console.log(reqBodyJson.slug);
@@ -44,6 +48,7 @@ export const handler = ApiHandler(async () => {
   try {
     data = await ddb.send(new ScanCommand(Params));
   } catch (err) {
+    statusCode = 503;
     console.log("Error", err);
   }
 
@@ -57,7 +62,7 @@ export const handler = ApiHandler(async () => {
 
   //
   return {
-    statusCode: 200,
+    statusCode,
     body: JSON.stringify(first),
   };
 });

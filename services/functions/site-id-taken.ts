@@ -35,11 +35,11 @@ export const handler = ApiHandler(async () => {
     FilterExpression: "slug = :slug",
     // Define the expression attribute value, which are substitutes for the values you want to compare.
     ExpressionAttributeValues: {
-      ":slug": { S: reqBodyJson.slug },
+      ":slug": { S: slug },
     },
     // Set the projection expression, which the the attributes that you want.
     // ProjectionExpression: "slug, siteID",
-    TableName: Table.sites.tableName,
+    TableName: Table.mysites.tableName,
   };
 
   const ddb = new DynamoDBClient({});

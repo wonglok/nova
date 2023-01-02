@@ -55,15 +55,15 @@ export const handler = ApiHandler(async () => {
     };
   }
 
-  let _id = v4() + "";
+  let oid = v4() + "";
   try {
     await ddb.send(
       new PutItemCommand({
-        TableName: Table.sites.tableName,
+        TableName: Table.mysites.tableName,
         Item: marshall({
           //
 
-          _id: _id,
+          oid: oid,
           slug: slug,
           userID: session.properties.userID,
           createdAt: new Date().getTime(),
@@ -88,9 +88,9 @@ export const handler = ApiHandler(async () => {
   try {
     const data = await ddb.send(
       new GetItemCommand({
-        TableName: Table.sites.tableName,
+        TableName: Table.mysites.tableName,
         Key: marshall({
-          _id: _id,
+          oid: oid,
         }),
       })
     );
@@ -131,7 +131,7 @@ async function checkTaken({ slug, ddb }) {
         },
         // Set the projection expression, which the the attributes that you want.
         // ProjectionExpression: "slug, siteID",
-        TableName: Table.sites.tableName,
+        TableName: Table.mysites.tableName,
       })
     );
   } catch (err) {

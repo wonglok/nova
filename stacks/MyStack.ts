@@ -50,48 +50,60 @@ export function MyStack({ stack, app }: StackContext) {
     primaryIndex: { partitionKey: "userId" },
   });
 
-  // const invitationTable = new Table(stack, "invitation", {
-  //   fields: {
-  //     _id: "string",
-  //   },
-  //   primaryIndex: { partitionKey: "_id" },
-  // });
-
-  const followingTable = new Table(stack, "following", {
+  const followingTable = new Table(stack, "myfollowing", {
     fields: {
-      _id: "string", // randID
+      oid: "string", // randID
       userID: "string",
       followingUserID: "string",
       followBackCache: "string",
     },
-    primaryIndex: { partitionKey: "_id" },
+    primaryIndex: { partitionKey: "oid" },
   });
 
   //
 
-  const sitesTable = new Table(stack, "sites", {
+  const sitesTable = new Table(stack, "mysites", {
     fields: {
-      _id: "string", // randID
+      oid: "string", // randID
       slug: "string",
       userID: "string",
       createdAt: "string",
     },
-    primaryIndex: { partitionKey: "_id" },
+    primaryIndex: { partitionKey: "oid" },
   });
 
-  const customdoaminsTable = new Table(stack, "customdoamins", {
+  const customdoaminsTable = new Table(stack, "mycustomdoamins", {
     fields: {
       //
-      _id: "string", // randID
-      domain: "string", //
+      oid: "string", // randID
+      slug: "string", //
       userID: "string",
       siteID: "string",
       createdAt: "string",
     },
-    primaryIndex: { partitionKey: "_id" },
+    primaryIndex: { partitionKey: "oid" },
   });
 
-  const myTables = [customdoaminsTable, sitesTable, usersTable, followingTable];
+  const metapagesTable = new Table(stack, "mymetapages", {
+    fields: {
+      //
+      oid: "string", // randID
+      slug: "string", //
+      userID: "string",
+      siteID: "string",
+      createdAt: "string",
+      seo: "binary",
+    },
+    primaryIndex: { partitionKey: "oid" },
+  });
+
+  const myTables = [
+    metapagesTable,
+    customdoaminsTable,
+    sitesTable,
+    usersTable,
+    followingTable,
+  ];
 
   //------ WebSocket API ------//
   const auth = new Auth(stack, "auth", {
@@ -122,6 +134,7 @@ export function MyStack({ stack, app }: StackContext) {
       },
     },
     routes: {
+      //
       "GET /": "functions/discovery.handler",
       "GET /script": "functions/script.handler",
       "POST /import-map": "functions/import-map.handler",
@@ -135,6 +148,12 @@ export function MyStack({ stack, app }: StackContext) {
       "POST /site-get": "functions/site-get.handler",
       "POST /site-domain-add": "functions/site-domain-add.handler",
       "POST /site-domain-remove": "functions/site-domain-remove.handler",
+      "POST /site-domain-list-mine": "functions/site-domain-list-mine.handler",
+
+      //
+      "POST /site-page-create": "functions/site-page-create.handler",
+      "POST /site-page-list-mine": "functions/site-page-list-mine.handler",
+      "POST /site-page-remove": "functions/site-page-remove.handler",
     },
   });
 

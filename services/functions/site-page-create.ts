@@ -34,10 +34,9 @@ export const handler = ApiHandler(async () => {
 
   const ddb = new DynamoDBClient({});
 
-  //  AND userID = :userID AND siteID = :siteID
   let resultDomain = await ddb.send(
     new ScanCommand({
-      // Specify which items in the results are returned.
+      //  AND userID = :userID AND siteID = :siteID
       FilterExpression: "slug = :slug",
       ExpressionAttributeValues: {
         // ":siteID": { S: siteID },
@@ -46,7 +45,7 @@ export const handler = ApiHandler(async () => {
       },
       // Set the projection expression, which the the attributes that you want.
       // ProjectionExpression: "domain, siteID",
-      TableName: Table.mycustomdoamins.tableName,
+      TableName: Table.mymetapages.tableName,
     })
   );
 
@@ -65,12 +64,15 @@ export const handler = ApiHandler(async () => {
 
     await ddb.send(
       new PutItemCommand({
-        TableName: Table.mycustomdoamins.tableName,
+        TableName: Table.mymetapages.tableName,
         Item: marshall({
           //
           oid: oid,
           slug: slug,
           siteID,
+          seo: {
+            slug,
+          },
           userID: session.properties.userID,
           createdAt: new Date().getTime(),
         }),
@@ -79,16 +81,14 @@ export const handler = ApiHandler(async () => {
 
     let data = await ddb.send(
       new ScanCommand({
-        // Specify which items in the results are returned.
         FilterExpression: "slug = :slug",
         ExpressionAttributeValues: {
           // ":siteID": { S: siteID },
-          ":slug": { S: domain },
+          ":slug": { S: slug },
           // ":userID": { S: userID },
         },
-        // Set the projection expression, which the the attributes that you want.
         // ProjectionExpression: "domain, siteID",
-        TableName: Table.mycustomdoamins.tableName,
+        TableName: Table.mymetapages.tableName,
       })
     );
 
@@ -98,41 +98,12 @@ export const handler = ApiHandler(async () => {
         list: (data.Items || []).filter((e) => e).map((e) => unmarshall(e)),
       }),
     };
+  } else {
+    return {
+      statusCode: 409,
+      body: JSON.stringify({
+        error: "taken",
+      }),
+    };
   }
-
-  //
-
-  //!SECTION
-
-  //!SECTION
-
-  // try {
-  //   let data = { Item: {} };
-  //   let statusCode = 200;
-  //   try {
-  //     data = await ddb.send(
-  //       new GetItemCommand({
-  //         TableName: Table.domains.tableName,
-  //         Key: marshall({
-  //           oid: bodyData.oid,
-  //         }),
-  //       })
-  //     );
-  //   } catch (err) {
-  //     statusCode = 503;
-  //     console.log("Error", err);
-  //   }
-
-  //   let item = unmarshall(data.Item!);
-
-  //   return {
-  //     statusCode: statusCode,
-  //     body: JSON.stringify({ item }),
-  //   };
-  // } catch (e) {
-  //   return {
-  //     statusCode: 503,
-  //     body: JSON.stringify({ reason: e }),
-  //   };
-  // }
 });

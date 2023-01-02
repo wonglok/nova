@@ -30,8 +30,6 @@ export const handler = ApiHandler(async () => {
   const ddb = new DynamoDBClient({});
 
   try {
-    //
-
     let data = { Items: [] };
     try {
       // Set the parameters.
@@ -44,7 +42,7 @@ export const handler = ApiHandler(async () => {
         },
         // Set the projection expression, which the the attributes that you want.
         // ProjectionExpression: "slug, siteID",
-        TableName: Table.sites.tableName,
+        TableName: Table.mysites.tableName,
       };
 
       data = await ddb.send(new ScanCommand(Params));
@@ -68,3 +66,9 @@ export const handler = ApiHandler(async () => {
     };
   }
 });
+
+//
+
+//!SECTION
+
+//!SECTION

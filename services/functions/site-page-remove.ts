@@ -36,7 +36,6 @@ export const handler = ApiHandler(async () => {
     new DeleteItemCommand({
       TableName: Table.mymetapages.tableName,
       Key: {
-        userID: { S: `${userID}` },
         oid: { S: `${oid}` },
       },
     })

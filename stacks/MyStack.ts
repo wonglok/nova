@@ -79,7 +79,19 @@ export function MyStack({ stack, app }: StackContext) {
     primaryIndex: { partitionKey: "_id" },
   });
 
-  const myTables = [sitesTable, usersTable, followingTable];
+  const customdoaminsTable = new Table(stack, "customdoamins", {
+    fields: {
+      //
+      _id: "string", // randID
+      domain: "string", //
+      userID: "string",
+      siteID: "string",
+      createdAt: "string",
+    },
+    primaryIndex: { partitionKey: "_id" },
+  });
+
+  const myTables = [customdoaminsTable, sitesTable, usersTable, followingTable];
 
   //------ WebSocket API ------//
   const auth = new Auth(stack, "auth", {
@@ -121,6 +133,8 @@ export function MyStack({ stack, app }: StackContext) {
       "POST /site-create": "functions/site-create.handler",
       "POST /site-recent": "functions/site-recent.handler",
       "POST /site-get": "functions/site-get.handler",
+      "POST /site-domain-add": "functions/site-domain-add.handler",
+      "POST /site-domain-remove": "functions/site-domain-remove.handler",
     },
   });
 

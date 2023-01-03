@@ -9,7 +9,7 @@ import {
   ScanCommand,
 } from "@aws-sdk/client-dynamodb";
 import { marshall, unmarshall } from "@aws-sdk/util-dynamodb";
-import { useSession } from "@serverless-stack/node/auth";
+// import { useSession } from "@serverless-stack/node/auth";
 // import { v4 } from "uuid";
 // import slugify from "slugify";
 

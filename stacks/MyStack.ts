@@ -154,6 +154,7 @@ export function MyStack({ stack, app }: StackContext) {
       "POST /site-page-create": "functions/site-page-create.handler",
       "POST /site-page-list-mine": "functions/site-page-list-mine.handler",
       "POST /site-page-remove": "functions/site-page-remove.handler",
+      "POST /site-page-update": "functions/site-page-update.handler",
     },
   });
 

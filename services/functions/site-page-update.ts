@@ -26,9 +26,9 @@ export const handler = ApiHandler(async () => {
 
   const bodyText = useBody();
 
-  const bodyData = JSON.parse(bodyText || JSON.stringify({ oid: "" }));
+  const bodyData = JSON.parse(bodyText || JSON.stringify({}));
 
-  let { oid } = bodyData;
+  let { object } = bodyData;
 
   const ddb = new DynamoDBClient({});
 
@@ -36,20 +36,19 @@ export const handler = ApiHandler(async () => {
     new GetItemCommand({
       TableName: Table.mymetapages.tableName,
       Key: {
-        oid: { S: `${oid}` },
+        oid: { S: `${object.oid}` },
       },
     })
   );
 
-  let dataItem = unmarshall(data.Item!) || { userID: "" };
+  let dataItem = unmarshall(data.Item!);
 
+  console.log(dataItem);
   if (dataItem.userID === session?.properties?.userID) {
     await ddb.send(
-      new DeleteItemCommand({
+      new PutItemCommand({
         TableName: Table.mymetapages.tableName,
-        Key: {
-          oid: { S: `${oid}` },
-        },
+        Item: marshall(object),
       })
     );
   }

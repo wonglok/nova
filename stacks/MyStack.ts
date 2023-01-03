@@ -139,7 +139,8 @@ export function MyStack({ stack, app }: StackContext) {
       "GET /script": "functions/script.handler",
       "POST /import-map": "functions/import-map.handler",
       "GET /session": "functions/session.handler",
-      "POST /domain-of-sites": "functions/domain-of-sites.handler",
+
+      //
       "POST /site-id-taken": "functions/site-id-taken.handler",
 
       //

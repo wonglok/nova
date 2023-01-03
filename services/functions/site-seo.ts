@@ -30,7 +30,10 @@ export const handler = ApiHandler(async () => {
   const ddb = new DynamoDBClient({});
 
   try {
+    //
     let data = { Items: [] };
+
+    //
     try {
       // Set the parameters.
       const Params = {
@@ -45,6 +48,7 @@ export const handler = ApiHandler(async () => {
         TableName: Table.mysites.tableName,
       };
 
+      //
       data = await ddb.send(new ScanCommand(Params));
     } catch (err) {
       console.error("Error", err);

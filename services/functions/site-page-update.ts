@@ -43,7 +43,6 @@ export const handler = ApiHandler(async () => {
 
   let dataItem = unmarshall(data.Item!);
 
-  console.log(dataItem);
   if (dataItem.userID === session?.properties?.userID) {
     await ddb.send(
       new PutItemCommand({

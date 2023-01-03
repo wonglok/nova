@@ -11,6 +11,7 @@ import {
 import { marshall, unmarshall } from "@aws-sdk/util-dynamodb";
 import { useSession } from "@serverless-stack/node/auth";
 import { v4 } from "uuid";
+import slugify from "slugify";
 // import slugify from "slugify";
 
 export const handler = ApiHandler(async () => {
@@ -40,7 +41,7 @@ export const handler = ApiHandler(async () => {
       FilterExpression: "slug = :slug",
       ExpressionAttributeValues: {
         // ":siteID": { S: siteID },
-        ":slug": { S: slug },
+        ":slug": { S: slugify(slug, "_") },
         // ":userID": { S: userID },
       },
       // Set the projection expression, which the the attributes that you want.

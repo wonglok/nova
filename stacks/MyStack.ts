@@ -161,6 +161,7 @@ export function MyStack({ stack, app }: StackContext) {
       "POST /seo-subdomain-site": "functions/seo-subdomain-site.handler",
       "POST /seo-userdomain-site": "functions/seo-userdomain-site.handler",
       "POST /seo-site-page": "functions/seo-site-page.handler",
+      "POST /seo-page-get": "functions/seo-page-get.handler",
     },
   });
 

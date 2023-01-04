@@ -83,7 +83,7 @@ export const handler = ApiHandler(async () => {
         FilterExpression: "slug = :slug",
         ExpressionAttributeValues: {
           // ":siteID": { S: siteID },
-          ":slug": { S: domain },
+          ":slug": { S: slug },
           // ":userID": { S: userID },
         },
         // Set the projection expression, which the the attributes that you want.

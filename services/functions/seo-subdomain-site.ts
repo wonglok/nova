@@ -44,6 +44,7 @@ export const handler = ApiHandler(async () => {
           ":slug": { S: bodyData.slug },
         },
         // Set the projection expression, which the the attributes that you want.
+        // ProjectionExpression: `oid, slug, seo, userID, createdAt`,
         // ProjectionExpression: "slug, siteID",
         TableName: Table.mysites.tableName,
       };

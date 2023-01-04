@@ -158,7 +158,9 @@ export function MyStack({ stack, app }: StackContext) {
       "POST /site-page-update": "functions/site-page-update.handler",
 
       //
-      "POST /site-seo": "functions/site-seo.handler",
+      "POST /seo-subdomain-site": "functions/seo-subdomain-site.handler",
+      "POST /seo-userdomain-site": "functions/seo-userdomain-site.handler",
+      "POST /seo-site-page": "functions/seo-site-page.handler",
     },
   });
 

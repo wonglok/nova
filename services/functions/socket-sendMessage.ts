@@ -5,6 +5,7 @@ const TableName = Table.Connections.tableName || "Connections";
 const dynamoDb = new DynamoDB.DocumentClient();
 
 import { APIGatewayProxyHandler } from "aws-lambda";
+import { useSession } from "@serverless-stack/node/auth";
 
 const postToConnection = async function ({
   apiG = {

@@ -181,6 +181,9 @@ export function MyStack({ stack, app }: StackContext) {
       "POST /seo-userdomain-site": "functions/seo-userdomain-site.handler",
       "POST /seo-site-page": "functions/seo-site-page.handler",
       "POST /seo-page-get": "functions/seo-page-get.handler",
+
+      //
+      "POST /effectnode": "functions/effectnode.handler",
     },
   });
 

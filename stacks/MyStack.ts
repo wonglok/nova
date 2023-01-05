@@ -43,6 +43,7 @@ export function MyStack({ stack, app }: StackContext) {
   });
 
   //------ Tables ------//
+
   const usersTable = new Table(stack, "users", {
     fields: {
       userId: "string",
@@ -97,7 +98,25 @@ export function MyStack({ stack, app }: StackContext) {
     primaryIndex: { partitionKey: "oid" },
   });
 
+  const sitemediaTable = new Table(stack, "mysitemedia", {
+    fields: {
+      //
+      oid: "string", // randID
+      slug: "string", //
+      userID: "string",
+      siteID: "string",
+      createdAt: "string",
+      seo: "binary",
+      ugcBucket: "string",
+      ugcCDN: "string",
+      ugcS3Link: "string",
+      ugcCDNLink: "string",
+    },
+    primaryIndex: { partitionKey: "oid" },
+  });
+
   const myTables = [
+    sitemediaTable,
     metapagesTable,
     customdoaminsTable,
     sitesTable,

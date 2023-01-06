@@ -48,16 +48,14 @@ export const handler = ApiHandler(async (event, context) => {
       },
     });
 
-    let reply = await effectNode.work();
+    await effectNode.work();
 
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ reply: reply }),
-    };
+    return effectNode.response;
   } catch (e) {
+    console.error(e);
     return {
       statusCode: 503,
-      body: JSON.stringify({ reason: e }),
+      body: JSON.stringify({ reason: "bugged" }),
     };
   }
 });

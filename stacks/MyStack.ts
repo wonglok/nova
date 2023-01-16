@@ -240,8 +240,13 @@ export function MyStack({ stack, app }: StackContext) {
       "POST /folder-update": "functions/folder-update.handler",
       "POST /folder-remove": "functions/folder-remove.handler",
 
-      //
+      ///!SECTION
+      ///!SECTION
       "POST /codepage-create": "functions/codepage-create.handler",
+      "POST /codepage-list": "functions/codepage-list.handler",
+      "POST /codepage-get": "functions/codepage-get.handler",
+      "POST /codepage-update": "functions/codepage-update.handler",
+      "POST /codepage-remove": "functions/codepage-remove.handler",
     },
   });
 

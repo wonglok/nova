@@ -3,6 +3,7 @@ import { ApiHandler } from "@serverless-stack/node/api";
 import { useSession } from "@serverless-stack/node/auth";
 import { DynamoDBClient, GetItemCommand } from "@aws-sdk/client-dynamodb";
 import { marshall, unmarshall } from "@aws-sdk/util-dynamodb";
+import { SITE_ADMINS } from "../../stacks/Config";
 
 export const handler = ApiHandler(async () => {
   const session = useSession();
@@ -21,6 +22,10 @@ export const handler = ApiHandler(async () => {
       }),
     })
   );
+
+  if (!SITE_ADMINS.some((admin) => admin === session.properties.userID)) {
+    throw new Error("Not admin");
+  }
 
   return {
     statusCode: 200,

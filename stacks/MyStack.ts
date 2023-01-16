@@ -137,6 +137,7 @@ export function MyStack({ stack, app }: StackContext) {
       //!SECTION
       sitePath: "string",
       folderID: "string",
+      lackFolderID: "string",
     },
     primaryIndex: { partitionKey: "oid" },
   });
@@ -144,6 +145,12 @@ export function MyStack({ stack, app }: StackContext) {
   //
 
   //
+  //
+  // code folder
+  // code pages
+  // code modules
+  // code modules->file
+  // code modules->detail
 
   //
 
@@ -231,13 +238,6 @@ export function MyStack({ stack, app }: StackContext) {
       "POST /folder-create": "functions/folder-create.handler",
       "POST /folder-list": "functions/folder-list.handler",
       "POST /folder-get": "functions/folder-get.handler",
-
-      //
-      // code folder
-      // code pages
-      // code modules
-      // code modules->file
-      // code modules->detail
     },
   });
 

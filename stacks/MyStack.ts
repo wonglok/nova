@@ -238,6 +238,7 @@ export function MyStack({ stack, app }: StackContext) {
       "POST /folder-create": "functions/folder-create.handler",
       "POST /folder-list": "functions/folder-list.handler",
       "POST /folder-get": "functions/folder-get.handler",
+      "POST /folder-update": "functions/folder-update.handler",
     },
   });
 

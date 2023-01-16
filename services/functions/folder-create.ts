@@ -25,33 +25,17 @@ export const handler = ApiHandler(async () => {
 
   const body = useBody();
 
-  const reqBodyJson = JSON.parse(body || '{slug: ""}');
+  const reqBodyJson = JSON.parse(body || '{sitepath: ""}');
 
   const ddb = new DynamoDBClient({});
 
   if (session.properties.tenantID === "guest") {
-    statusCode = 403;
-    returnBody = JSON.stringify({
-      ok: false,
-      reason: "guest cannot create site",
-    });
-
     return {
-      statusCode,
-      body: returnBody,
-    };
-  }
-
-  let slug = slugify(reqBodyJson.slug, "_");
-  let isOK = await checkTaken({ ddb, slug: slug });
-
-  if (!isOK) {
-    statusCode = 406;
-    returnBody = JSON.stringify({ ok: false, reason: "name taken" });
-
-    return {
-      statusCode,
-      body: returnBody,
+      statusCode: 403,
+      body: JSON.stringify({
+        ok: false,
+        reason: "guest cannot create site",
+      }),
     };
   }
 
@@ -59,14 +43,17 @@ export const handler = ApiHandler(async () => {
   try {
     await ddb.send(
       new PutItemCommand({
-        TableName: Table.mysites.tableName,
+        TableName: Table.codefolder.tableName,
         Item: marshall({
           //
 
           oid: oid,
-          slug: slug,
           userID: session.properties.userID,
           createdAt: new Date().getTime(),
+
+          //
+          displayName: reqBodyJson.displayName,
+          thumbURL: "",
         }),
       })
     );
@@ -88,7 +75,7 @@ export const handler = ApiHandler(async () => {
   try {
     const data = await ddb.send(
       new GetItemCommand({
-        TableName: Table.mysites.tableName,
+        TableName: Table.codefolder.tableName,
         Key: marshall({
           oid: oid,
         }),
@@ -115,34 +102,5 @@ export const handler = ApiHandler(async () => {
     };
   }
 });
-
-async function checkTaken({ slug, ddb }) {
-  // Set the parameters.
-
-  let data = { Items: [] };
-  try {
-    data = await ddb.send(
-      new ScanCommand({
-        // Specify which items in the results are returned.
-        FilterExpression: "slug = :slug",
-        // Define the expression attribute value, which are substitutes for the values you want to compare.
-        ExpressionAttributeValues: {
-          ":slug": { S: slug },
-        },
-        // Set the projection expression, which the the attributes that you want.
-        // ProjectionExpression: "slug, siteID",
-        TableName: Table.mysites.tableName,
-      })
-    );
-  } catch (err) {
-    console.log("Error", err);
-  }
-
-  // let list = data.Items.map((it) => {
-  //   return unmarshall(it);
-  // });
-
-  return data.Items.length === 0;
-}
 
 //

@@ -7,6 +7,7 @@ export const handler = async (event: { body: string }) => {
   const generator = new Generator({
     mapUrl: import.meta.url,
     env: ["browser", "production", "module"],
+    cache: false,
   });
 
   let bodyData = JSON.parse(event.body);

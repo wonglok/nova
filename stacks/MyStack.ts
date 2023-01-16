@@ -115,7 +115,49 @@ export function MyStack({ stack, app }: StackContext) {
     primaryIndex: { partitionKey: "oid" },
   });
 
+  const codefolderTable = new Table(stack, "codefolder", {
+    fields: {
+      //
+      oid: "string", // randID
+      name: "string", //
+      userID: "string",
+      createdAt: "string",
+    },
+    primaryIndex: { partitionKey: "oid" },
+  });
+
+  const codepageTable = new Table(stack, "codepage", {
+    fields: {
+      //
+      oid: "string", // randID
+      name: "string", //
+      userID: "string",
+      createdAt: "string",
+      //
+
+      folderID: "string",
+      sitepath: "string",
+
+      //
+      seoTitle: "string",
+    },
+    primaryIndex: { partitionKey: "oid" },
+  });
+
+  //
+
+  //
+
+  //
+
   const myTables = [
+    codefolderTable,
+    codepageTable,
+    //
+    //
+    //
+    //
+    //
     sitemediaTable,
     metapagesTable,
     customdoaminsTable,
@@ -184,6 +226,14 @@ export function MyStack({ stack, app }: StackContext) {
 
       //
       "POST /effectnode": "functions/effectnode.handler",
+
+      //!SECTION
+      ///!SECTION
+
+      //
+      "POST /folder-create": "functions/folder-create.handler",
+
+      //
     },
   });
 

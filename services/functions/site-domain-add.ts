@@ -30,7 +30,6 @@ export const handler = ApiHandler(async () => {
   let { siteID } = bodyData;
 
   let { slug } = bodyData;
-  //
 
   const ddb = new DynamoDBClient({});
 

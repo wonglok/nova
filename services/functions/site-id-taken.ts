@@ -22,10 +22,10 @@ export const handler = ApiHandler(async () => {
   // // const session = useSession();
   //
 
-  // // // Check user is authenticated
-  // // if (session.type !== "user") {
-  // //   throw new Error("Not authenticated");
-  // // }
+  // // Check user is authenticated
+  // if (session.type !== "user") {
+  //   throw new Error("Not authenticated");
+  // }
 
   // // unmarshall(data.Item!)
 

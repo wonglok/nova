@@ -239,7 +239,7 @@ export function MyStack({ stack, app }: StackContext) {
       "POST /folder-list": "functions/folder-list.handler",
       "POST /folder-get": "functions/folder-get.handler",
       "POST /folder-update": "functions/folder-update.handler",
-      "POST /folder-delete": "functions/folder-delete.handler",
+      "POST /folder-remove": "functions/folder-remove.handler",
     },
   });
 

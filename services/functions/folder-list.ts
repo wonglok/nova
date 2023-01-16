@@ -11,14 +11,19 @@ import {
 import { marshall, unmarshall } from "@aws-sdk/util-dynamodb";
 import { useSession } from "@serverless-stack/node/auth";
 import { v4 } from "uuid";
+import { SITE_ADMINS } from "../../stacks/Config";
 // import slugify from "slugify";
 
 export const handler = ApiHandler(async () => {
   const session = useSession();
 
-  // Check user is authenticated
+  // // Check user is authenticated
   if (session.type !== "user") {
     throw new Error("Not authenticated");
+  }
+
+  if (!SITE_ADMINS.some((admin) => admin === session.properties.userID)) {
+    throw new Error("Not admin");
   }
 
   //

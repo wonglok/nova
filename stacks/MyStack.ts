@@ -147,9 +147,9 @@ export function MyStack({ stack, app }: StackContext) {
   //
   //
   // code folder
-  // code pages
+  // code page
   // code modules
-  // code modules->file
+  // code modules->code file / json file
   // code modules->detail
 
   //

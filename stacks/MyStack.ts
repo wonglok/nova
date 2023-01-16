@@ -135,15 +135,16 @@ export function MyStack({ stack, app }: StackContext) {
       userID: "string",
       createdAt: "string",
       //!SECTION
-      sitePath: "string",
+      slug: "string",
       folderID: "string",
       lackFolderID: "string",
+      thumbURL: "string",
     },
     primaryIndex: { partitionKey: "oid" },
   });
 
   //
-
+  //
   //
   //
   // code folder
@@ -233,13 +234,14 @@ export function MyStack({ stack, app }: StackContext) {
 
       //!SECTION
       ///!SECTION
-
-      //
       "POST /folder-create": "functions/folder-create.handler",
       "POST /folder-list": "functions/folder-list.handler",
       "POST /folder-get": "functions/folder-get.handler",
       "POST /folder-update": "functions/folder-update.handler",
       "POST /folder-remove": "functions/folder-remove.handler",
+
+      //
+      "POST /codepage-create": "functions/codepage-create.handler",
     },
   });
 

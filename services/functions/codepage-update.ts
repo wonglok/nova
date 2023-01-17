@@ -48,17 +48,57 @@ export const handler = ApiHandler(async () => {
 
   let dataItem = unmarshall(data.Item!);
 
-  if (dataItem.userID === session?.properties?.userID) {
+  let ok = await checkTaken({ slug: object.slug, ddb });
+
+  if (!ok) {
+    return {
+      statusCode: 406,
+      body: JSON.stringify({ reason: "taken" }),
+    };
+  }
+
+  if (ok && dataItem.userID === session?.properties?.userID) {
     await ddb.send(
       new PutItemCommand({
         TableName: Table.codepage.tableName,
         Item: marshall(object),
       })
     );
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ ok: true }),
+    };
+  }
+});
+
+async function checkTaken({ slug, ddb }) {
+  // Set the parameters.
+
+  let data = { Items: [] };
+  try {
+    data = await ddb.send(
+      new ScanCommand({
+        // Specify which items in the results are returned.
+        FilterExpression: "slug = :slug",
+        // Define the expression attribute value, which are substitutes for the values you want to compare.
+        ExpressionAttributeValues: {
+          ":slug": { S: slug },
+        },
+        // Set the projection expression, which the the attributes that you want.
+        // ProjectionExpression: "slug, siteID",
+        TableName: Table.codepage.tableName,
+      })
+    );
+  } catch (err) {
+    console.log("Error", err);
   }
 
-  return {
-    statusCode: 200,
-    body: JSON.stringify({ ok: true }),
-  };
-});
+  // let list = data.Items.map((it) => {
+  //   return unmarshall(it);
+  // });
+
+  return data.Items.length === 0;
+}
+
+//

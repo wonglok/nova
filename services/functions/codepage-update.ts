@@ -48,6 +48,13 @@ export const handler = ApiHandler(async () => {
 
   let dataItem = unmarshall(data.Item!);
 
+  if (dataItem.slug === object.slug) {
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ ok: true }),
+    };
+  }
+
   let ok = await checkTaken({ slug: object.slug, ddb });
 
   if (!ok) {
@@ -68,6 +75,11 @@ export const handler = ApiHandler(async () => {
     return {
       statusCode: 200,
       body: JSON.stringify({ ok: true }),
+    };
+  } else {
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ error: "fail" }),
     };
   }
 });

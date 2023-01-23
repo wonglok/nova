@@ -15,6 +15,10 @@ import { v4 } from "uuid";
 import slugify from "slugify";
 import { SITE_ADMINS } from "../../stacks/Config";
 
+export const ThisTableName = Table.AppEntry.tableName;
+
+//
+
 export const create = ApiHandler(async () => {
   let statusCode = 200;
   let returnBody = JSON.stringify({});
@@ -31,7 +35,7 @@ export const create = ApiHandler(async () => {
 
   const body = useBody();
 
-  const reqBodyJson = JSON.parse(body || '{sitepath: ""}');
+  const reqBodyJson = JSON.parse(body || '{slug: ""}');
 
   const ddb = new DynamoDBClient({});
 
@@ -45,11 +49,22 @@ export const create = ApiHandler(async () => {
     };
   }
 
+  // let isOK = await checkTaken({ slug: reqBodyJson.slug, ddb });
+  // if (!isOK) {
+  //   return {
+  //     statusCode: 406,
+  //     body: JSON.stringify({
+  //       ok: false,
+  //       reason: "taken",
+  //     }),
+  //   };
+  // }
+
   let oid = v4() + "";
   try {
     await ddb.send(
       new PutItemCommand({
-        TableName: Table.appFolder.tableName,
+        TableName: ThisTableName,
         Item: marshall({
           //
 
@@ -58,7 +73,12 @@ export const create = ApiHandler(async () => {
           createdAt: new Date().getTime(),
 
           //
-          displayName: reqBodyJson.displayName,
+          //
+          //
+          // folderID: reqBodyJson.folderID,
+          title: reqBodyJson.title,
+          tags: reqBodyJson.tags,
+
           thumbURL: "",
         }),
       })
@@ -81,7 +101,7 @@ export const create = ApiHandler(async () => {
   try {
     const data = await ddb.send(
       new GetItemCommand({
-        TableName: Table.appFolder.tableName,
+        TableName: ThisTableName,
         Key: marshall({
           oid: oid,
         }),
@@ -90,7 +110,7 @@ export const create = ApiHandler(async () => {
 
     return {
       statusCode,
-      body: JSON.stringify(unmarshall(data.Item!)),
+      body: JSON.stringify(unmarshall(data.Item)),
     };
   } catch (err) {
     console.error(err);
@@ -133,28 +153,49 @@ export const update = ApiHandler(async () => {
 
   let data = await ddb.send(
     new GetItemCommand({
-      TableName: Table.appFolder.tableName,
+      TableName: ThisTableName,
       Key: {
         oid: { S: `${object.oid}` },
       },
     })
   );
 
-  let dataItem = unmarshall(data.Item!);
+  let dataItem = unmarshall(data.Item);
 
-  if (dataItem.userID === session?.properties?.userID) {
+  if (dataItem.slug === object.slug) {
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ ok: true }),
+    };
+  }
+
+  // let ok = await checkTaken({ slug: object.slug, ddb });
+
+  // if (!ok) {
+  //   return {
+  //     statusCode: 406,
+  //     body: JSON.stringify({ reason: "taken" }),
+  //   };
+  // }
+
+  if (ok && dataItem.userID === session?.properties?.userID) {
     await ddb.send(
       new PutItemCommand({
-        TableName: Table.appFolder.tableName,
+        TableName: ThisTableName,
         Item: marshall(object),
       })
     );
-  }
 
-  return {
-    statusCode: 200,
-    body: JSON.stringify({ ok: true }),
-  };
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ ok: true }),
+    };
+  } else {
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ error: "fail" }),
+    };
+  }
 });
 
 export const remove = ApiHandler(async () => {
@@ -188,19 +229,19 @@ export const remove = ApiHandler(async () => {
 
   let data = await ddb.send(
     new GetItemCommand({
-      TableName: Table.appFolder.tableName,
+      TableName: ThisTableName,
       Key: {
         oid: { S: `${oid}` },
       },
     })
   );
 
-  let dataItem = unmarshall(data.Item!) || { userID: "" };
+  let dataItem = unmarshall(data.Item) || { userID: "" };
 
   if (dataItem.userID === session?.properties?.userID) {
     await ddb.send(
       new DeleteItemCommand({
-        TableName: Table.appFolder.tableName,
+        TableName: ThisTableName,
         Key: {
           oid: { S: `${oid}` },
         },
@@ -238,14 +279,14 @@ export const get = ApiHandler(async () => {
 
   let data = await ddb.send(
     new GetItemCommand({
-      TableName: Table.appFolder.tableName,
+      TableName: ThisTableName,
       Key: {
         oid: { S: `${oid}` },
       },
     })
   );
 
-  let dataItem = unmarshall(data.Item!) || false;
+  let dataItem = unmarshall(data.Item) || false;
 
   return {
     statusCode: 200,
@@ -272,7 +313,7 @@ export const list = ApiHandler(async () => {
 
   const bodyData = JSON.parse(bodyText || JSON.stringify({ oid: "" }));
 
-  let { siteID } = bodyData;
+  let { folderID } = bodyData;
 
   let { slug } = bodyData;
   //
@@ -281,9 +322,9 @@ export const list = ApiHandler(async () => {
 
   let data = await ddb.send(
     new ScanCommand({
-      // FilterExpression: "siteID = :siteID",
+      // FilterExpression: "folderID = :folderID",
       // ExpressionAttributeValues: {
-      //   // ":siteID": { S: siteID },
+      //   ":folderID": { S: folderID },
       //   // ":siteID": { S: siteID },
       //   // ":userID": { S: userID },
       // },
@@ -300,7 +341,7 @@ export const list = ApiHandler(async () => {
         createdAt: new Date().getTime(),
       */
       //
-      TableName: Table.appFolder.tableName,
+      TableName: ThisTableName,
     })
   );
 
@@ -318,3 +359,34 @@ export const list = ApiHandler(async () => {
     }),
   };
 });
+
+async function checkTaken({ slug, ddb }) {
+  // Set the parameters.
+
+  let data = { Items: [] };
+  try {
+    data = await ddb.send(
+      new ScanCommand({
+        // Specify which items in the results are returned.
+        FilterExpression: "slug = :slug",
+        // Define the expression attribute value, which are substitutes for the values you want to compare.
+        ExpressionAttributeValues: {
+          ":slug": { S: slug },
+        },
+        // Set the projection expression, which the the attributes that you want.
+        // ProjectionExpression: "slug, siteID",
+        TableName: ThisTableName,
+      })
+    );
+  } catch (err) {
+    console.log("Error", err);
+  }
+
+  // let list = data.Items.map((it) => {
+  //   return unmarshall(it);
+  // });
+
+  return data.Items.length === 0;
+}
+
+//

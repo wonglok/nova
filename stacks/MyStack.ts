@@ -50,14 +50,7 @@ export function MyStack({ stack, app }: StackContext) {
     primaryIndex: { partitionKey: "userId" },
   });
 
-  const appFolderTable = new Table(stack, "appFolder", {
-    fields: {
-      oid: "string",
-    },
-    primaryIndex: { partitionKey: "oid" },
-  });
-
-  const appSnapshotTable = new Table(stack, "appSnapshot", {
+  const AppEntryTable = new Table(stack, "AppEntry", {
     fields: {
       oid: "string",
     },
@@ -77,8 +70,9 @@ export function MyStack({ stack, app }: StackContext) {
 
   const MyTables = [
     //
-    appFolderTable,
-    appSnapshotTable,
+    AppEntryTable,
+
+    //
     usersTable,
   ];
 
@@ -119,17 +113,17 @@ export function MyStack({ stack, app }: StackContext) {
 
       "GET /bundle/{seg1}/{seg2}/{seg3}/{seg4}": "functions/bundle.handler",
 
-      "POST /app-folder-create": "functions/app-folder.create",
-      "POST /app-folder-get": "functions/app-folder.get",
-      "POST /app-folder-list": "functions/app-folder.list",
-      "POST /app-folder-update": "functions/app-folder.update",
-      "POST /app-folder-remove": "functions/app-folder.remove",
+      "POST /AppEntry-create": "functions/AppEntry.create",
+      "POST /AppEntry-get": "functions/AppEntry.get",
+      "POST /AppEntry-list": "functions/AppEntry.list",
+      "POST /AppEntry-update": "functions/AppEntry.update",
+      "POST /AppEntry-remove": "functions/AppEntry.remove",
 
-      "POST /app-snapshot-create": "functions/app-snapshot.create",
-      "POST /app-snapshot-get": "functions/app-snapshot.get",
-      "POST /app-snapshot-list": "functions/app-snapshot.list",
-      "POST /app-snapshot-update": "functions/app-snapshot.update",
-      "POST /app-snapshot-remove": "functions/app-snapshot.remove",
+      // "POST /app-code-create": "functions/app-code.create",
+      // "POST /app-code-get": "functions/app-code.get",
+      // "POST /app-code-list": "functions/app-code.list",
+      // "POST /app-code-update": "functions/app-code.update",
+      // "POST /app-code-remove": "functions/app-code.remove",
     },
   });
 

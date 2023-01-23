@@ -256,8 +256,8 @@ let WalletAdapter =
 
 export const handler = AuthHandler({
   providers: {
-    local: LocalGuestAdapter({}),
-    guest: GuestAdapter({}),
+    // local: LocalGuestAdapter({}),
+    // guest: GuestAdapter({}),
     wallet: WalletAdapter({}),
     google: GoogleAdapter({
       mode: "oidc",

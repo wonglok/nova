@@ -13,7 +13,6 @@ import {
 import { DistributionForBucket } from "./UGC";
 
 export function MyStack({ stack, app }: StackContext) {
-  const siteURL = PRODUCTION_SITE_URL;
   const stage = app.stage;
   const region = app.region;
 
@@ -51,99 +50,20 @@ export function MyStack({ stack, app }: StackContext) {
     primaryIndex: { partitionKey: "userId" },
   });
 
-  const followingTable = new Table(stack, "myfollowing", {
+  const appFolderTable = new Table(stack, "appFolder", {
     fields: {
-      oid: "string", // randID
-      userID: "string",
-      followingUserID: "string",
-      followBackCache: "string",
+      oid: "string",
     },
     primaryIndex: { partitionKey: "oid" },
   });
 
-  //
-
-  const sitesTable = new Table(stack, "mysites", {
+  const appSnapshotTable = new Table(stack, "appSnapshot", {
     fields: {
-      oid: "string", // randID
-      slug: "string",
-      userID: "string",
-      createdAt: "string",
+      oid: "string",
     },
     primaryIndex: { partitionKey: "oid" },
   });
 
-  const customdoaminsTable = new Table(stack, "mycustomdoamins", {
-    fields: {
-      //
-      oid: "string", // randID
-      slug: "string", //
-      userID: "string",
-      siteID: "string",
-      createdAt: "string",
-    },
-    primaryIndex: { partitionKey: "oid" },
-  });
-
-  const metapagesTable = new Table(stack, "mymetapages", {
-    fields: {
-      //
-      oid: "string", // randID
-      slug: "string", //
-      userID: "string",
-      siteID: "string",
-      createdAt: "string",
-      seo: "binary",
-    },
-    primaryIndex: { partitionKey: "oid" },
-  });
-
-  const sitemediaTable = new Table(stack, "mysitemedia", {
-    fields: {
-      //
-      oid: "string", // randID
-      slug: "string", //
-      userID: "string",
-      siteID: "string",
-      createdAt: "string",
-      seo: "binary",
-      ugcBucket: "string",
-      ugcCDN: "string",
-      ugcS3Link: "string",
-      ugcCDNLink: "string",
-    },
-    primaryIndex: { partitionKey: "oid" },
-  });
-
-  const codefolderTable = new Table(stack, "codefolder", {
-    fields: {
-      //
-      oid: "string", // randID
-      userID: "string",
-      createdAt: "string",
-      //!SECTION
-      displayName: "string", //
-      thumbURL: "string",
-    },
-    primaryIndex: { partitionKey: "oid" },
-  });
-
-  const codepageTable = new Table(stack, "codepage", {
-    fields: {
-      //
-      oid: "string", // randID
-      userID: "string",
-      createdAt: "string",
-      //!SECTION
-      slug: "string",
-      folderID: "string",
-      lackFolderID: "string",
-      thumbURL: "string",
-    },
-    primaryIndex: { partitionKey: "oid" },
-  });
-
-  //
   //
   //
   //
@@ -155,27 +75,18 @@ export function MyStack({ stack, app }: StackContext) {
 
   //
 
-  const myTables = [
-    codefolderTable,
-    codepageTable,
+  const MyTables = [
     //
-    //
-    //
-    //
-    //
-    sitemediaTable,
-    metapagesTable,
-    customdoaminsTable,
-    sitesTable,
+    appFolderTable,
+    appSnapshotTable,
     usersTable,
-    followingTable,
   ];
 
   //------ WebSocket API ------//
   const auth = new Auth(stack, "auth", {
     authenticator: {
       environment: {
-        SITE_URL: siteURL,
+        SITE_URL: PRODUCTION_SITE_URL,
         GOOGLE_CLIENT_ID: GOOGLE_CLIENT_ID,
         LOCAL_SITE_URL: LOCAL_SITE_URL,
       },
@@ -196,7 +107,7 @@ export function MyStack({ stack, app }: StackContext) {
         environment: {
           ...ugc.envInfo,
         },
-        bind: [...myTables],
+        bind: [...MyTables],
       },
     },
     routes: {
@@ -206,47 +117,19 @@ export function MyStack({ stack, app }: StackContext) {
       "POST /import-map": "functions/import-map.handler",
       "GET /session": "functions/session.handler",
 
-      //
-      "POST /site-id-taken": "functions/site-id-taken.handler",
+      "GET /bundle/{seg1}/{seg2}/{seg3}/{seg4}": "functions/bundle.handler",
 
-      //
-      "POST /site-create": "functions/site-create.handler",
-      "POST /site-recent": "functions/site-recent.handler",
-      "POST /site-get": "functions/site-get.handler",
-      "POST /site-domain-add": "functions/site-domain-add.handler",
-      "POST /site-domain-remove": "functions/site-domain-remove.handler",
-      "POST /site-domain-list-mine": "functions/site-domain-list-mine.handler",
+      "POST /app-folder-create": "functions/app-folder.create",
+      "POST /app-folder-get": "functions/app-folder.get",
+      "POST /app-folder-list": "functions/app-folder.list",
+      "POST /app-folder-update": "functions/app-folder.update",
+      "POST /app-folder-remove": "functions/app-folder.remove",
 
-      //
-      "POST /site-page-create": "functions/site-page-create.handler",
-      "POST /site-page-list-mine": "functions/site-page-list-mine.handler",
-      "POST /site-page-remove": "functions/site-page-remove.handler",
-      "POST /site-page-update": "functions/site-page-update.handler",
-
-      //
-      "POST /seo-subdomain-site": "functions/seo-subdomain-site.handler",
-      "POST /seo-userdomain-site": "functions/seo-userdomain-site.handler",
-      "POST /seo-site-page": "functions/seo-site-page.handler",
-      "POST /seo-page-get": "functions/seo-page-get.handler",
-
-      //
-      "POST /effectnode": "functions/effectnode.handler",
-
-      //!SECTION
-      ///!SECTION
-      "POST /folder-create": "functions/folder-create.handler",
-      "POST /folder-list": "functions/folder-list.handler",
-      "POST /folder-get": "functions/folder-get.handler",
-      "POST /folder-update": "functions/folder-update.handler",
-      "POST /folder-remove": "functions/folder-remove.handler",
-
-      ///!SECTION
-      ///!SECTION
-      "POST /codepage-create": "functions/codepage-create.handler",
-      "POST /codepage-list": "functions/codepage-list.handler",
-      "POST /codepage-get": "functions/codepage-get.handler",
-      "POST /codepage-update": "functions/codepage-update.handler",
-      "POST /codepage-remove": "functions/codepage-remove.handler",
+      "POST /app-snapshot-create": "functions/app-snapshot.create",
+      "POST /app-snapshot-get": "functions/app-snapshot.get",
+      "POST /app-snapshot-list": "functions/app-snapshot.list",
+      "POST /app-snapshot-update": "functions/app-snapshot.update",
+      "POST /app-snapshot-remove": "functions/app-snapshot.remove",
     },
   });
 

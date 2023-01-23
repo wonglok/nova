@@ -15,7 +15,7 @@ import { v4 } from "uuid";
 import slugify from "slugify";
 import { SITE_ADMINS } from "../../stacks/Config";
 
-export const ThisTableName = Table.AppEntry.tableName;
+export const ThisTableName = Table.AppSnapshot.tableName;
 
 //
 
@@ -49,16 +49,16 @@ export const create = ApiHandler(async () => {
     };
   }
 
-  // let isOK = await checkTaken({ slug: reqBodyJson.slug, ddb });
-  // if (!isOK) {
-  //   return {
-  //     statusCode: 406,
-  //     body: JSON.stringify({
-  //       ok: false,
-  //       reason: "taken",
-  //     }),
-  //   };
-  // }
+  let isOK = await checkTaken({ slug: reqBodyJson.slug, ddb });
+  if (!isOK) {
+    return {
+      statusCode: 406,
+      body: JSON.stringify({
+        ok: false,
+        reason: "taken",
+      }),
+    };
+  }
 
   let oid = v4() + "";
   try {
@@ -75,7 +75,8 @@ export const create = ApiHandler(async () => {
           //
           //
           //
-          // folderID: reqBodyJson.folderID,
+          slug: reqBodyJson.slug,
+          appID: reqBodyJson.appID,
           title: reqBodyJson.title,
 
           thumbURL: "",
@@ -161,25 +162,25 @@ export const update = ApiHandler(async () => {
 
   let dataItem = unmarshall(data.Item);
 
-  // if (dataItem.slug === object.slug) {
-  //   return {
-  //     statusCode: 200,
-  //     body: JSON.stringify({ ok: true }),
-  //   };
-  // }
+  if (dataItem.slug === object.slug) {
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ ok: true }),
+    };
+  }
 
-  // let ok = await checkTaken({ slug: object.slug, ddb });
+  let ok = await checkTaken({ slug: object.slug, ddb });
 
-  // if (!ok) {
-  //   return {
-  //     statusCode: 406,
-  //     body: JSON.stringify({ reason: "taken" }),
-  //   };
-  // }
+  if (!ok) {
+    return {
+      statusCode: 406,
+      body: JSON.stringify({ reason: "taken" }),
+    };
+  }
 
   console.log(userID);
 
-  let ok = true;
+  // let ok = true;
   if (ok && dataItem.userID === userID) {
     await ddb.send(
       new PutItemCommand({

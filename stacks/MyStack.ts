@@ -50,13 +50,21 @@ export function MyStack({ stack, app }: StackContext) {
     primaryIndex: { partitionKey: "userId" },
   });
 
-  const AppEntryTable = new Table(stack, "AppEntry", {
+  const AppEntry = new Table(stack, "AppEntry", {
     fields: {
       oid: "string",
     },
     primaryIndex: { partitionKey: "oid" },
   });
 
+  const AppSnapshot = new Table(stack, "AppSnapshot", {
+    fields: {
+      oid: "string",
+    },
+    primaryIndex: { partitionKey: "oid" },
+  });
+
+  //
   //
   //
   //
@@ -70,7 +78,8 @@ export function MyStack({ stack, app }: StackContext) {
 
   const MyTables = [
     //
-    AppEntryTable,
+    AppSnapshot,
+    AppEntry,
 
     //
     usersTable,

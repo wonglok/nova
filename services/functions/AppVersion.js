@@ -15,9 +15,7 @@ import { v4 } from "uuid";
 import slugify from "slugify";
 import { SITE_ADMINS } from "../../stacks/Config";
 
-export const ThisTableName = Table.AppSnapshot.tableName;
-
-//
+export const ThisTableName = Table.AppVersion.tableName;
 
 export const create = ApiHandler(async () => {
   let statusCode = 200;
@@ -49,16 +47,19 @@ export const create = ApiHandler(async () => {
     };
   }
 
-  let isOK = await checkTaken({ slug: reqBodyJson.slug, ddb });
-  if (!isOK) {
-    return {
-      statusCode: 406,
-      body: JSON.stringify({
-        ok: false,
-        reason: "taken",
-      }),
-    };
-  }
+  // let isOK = await checkTaken({
+  //   slug: reqBodyJson.slug,
+  //   ddb,
+  // });
+  // if (!isOK) {
+  //   return {
+  //     statusCode: 406,
+  //     body: JSON.stringify({
+  //       ok: false,
+  //       reason: "taken",
+  //     }),
+  //   };
+  // }
 
   let oid = v4() + "";
   try {
@@ -76,7 +77,7 @@ export const create = ApiHandler(async () => {
           //
           //
           slug: reqBodyJson.slug,
-          appID: reqBodyJson.appID,
+          appEntryID: reqBodyJson.appEntryID,
           title: reqBodyJson.title,
 
           thumbURL: "",
@@ -169,16 +170,17 @@ export const update = ApiHandler(async () => {
     };
   }
 
-  let ok = await checkTaken({ slug: object.slug, ddb });
+  // let ok = await checkTaken({ slug: object.slug, ddb });
 
-  if (!ok) {
-    return {
-      statusCode: 406,
-      body: JSON.stringify({ reason: "taken" }),
-    };
-  }
+  // if (!ok) {
+  //   return {
+  //     statusCode: 406,
+  //     body: JSON.stringify({ reason: "taken" }),
+  //   };
+  // }
 
-  console.log(userID);
+  let ok = true;
+  // console.log(userID);
 
   // let ok = true;
   if (ok && dataItem.userID === userID) {
@@ -260,12 +262,9 @@ export const remove = ApiHandler(async () => {
 
 export const get = ApiHandler(async () => {
   const session = useSession();
-
-  // // Check user is authenticated
   if (session.type !== "user") {
     throw new Error("Not authenticated");
   }
-
   if (!SITE_ADMINS.some((admin) => admin === session.properties.userID)) {
     throw new Error("Not admin");
   }
@@ -316,7 +315,7 @@ export const list = ApiHandler(async () => {
 
   const bodyData = JSON.parse(bodyText || JSON.stringify({ oid: "" }));
 
-  let { folderID } = bodyData;
+  let { appEntryID } = bodyData;
 
   let { slug } = bodyData;
   //
@@ -325,25 +324,12 @@ export const list = ApiHandler(async () => {
 
   let data = await ddb.send(
     new ScanCommand({
-      // FilterExpression: "folderID = :folderID",
-      // ExpressionAttributeValues: {
-      //   ":folderID": { S: folderID },
-      //   // ":siteID": { S: siteID },
-      //   // ":userID": { S: userID },
-      // },
-
-      /*
-      //
-        oid: oid,
-        slug: slug,
-        siteID,
-        seo: {8
-          slug,
-        },
-        userID: session.properties.userID,
-        createdAt: new Date().getTime(),
-      */
-      //
+      FilterExpression: "appEntryID = :appEntryID",
+      ExpressionAttributeValues: {
+        ":appEntryID": { S: appEntryID },
+        // ":siteID": { S: siteID },
+        // ":userID": { S: userID },
+      },
       TableName: ThisTableName,
     })
   );
@@ -356,7 +342,6 @@ export const list = ApiHandler(async () => {
         .map((e) => unmarshall(e))
         .map((e) => {
           let newitem = { ...e };
-          // delete newitem.seo;
           return newitem;
         }),
     }),
@@ -370,24 +355,16 @@ async function checkTaken({ slug, ddb }) {
   try {
     data = await ddb.send(
       new ScanCommand({
-        // Specify which items in the results are returned.
         FilterExpression: "slug = :slug",
-        // Define the expression attribute value, which are substitutes for the values you want to compare.
         ExpressionAttributeValues: {
           ":slug": { S: slug },
         },
-        // Set the projection expression, which the the attributes that you want.
-        // ProjectionExpression: "slug, siteID",
         TableName: ThisTableName,
       })
     );
   } catch (err) {
     console.log("Error", err);
   }
-
-  // let list = data.Items.map((it) => {
-  //   return unmarshall(it);
-  // });
 
   return data.Items.length === 0;
 }

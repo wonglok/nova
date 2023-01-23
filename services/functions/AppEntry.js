@@ -175,7 +175,7 @@ export const update = ApiHandler(async () => {
 
   let ok = await checkTaken({ slug: object.slug, ddb });
 
-  if (!ok) {
+  if (!ok && dataItem.slug !== object.slug) {
     return {
       statusCode: 406,
       body: JSON.stringify({ reason: "taken" }),
@@ -183,26 +183,26 @@ export const update = ApiHandler(async () => {
   }
 
   // console.log(userID);
-
   // let ok = true;
-  if (ok && dataItem.userID === userID) {
-    await ddb.send(
-      new PutItemCommand({
-        TableName: ThisTableName,
-        Item: marshall(object),
-      })
-    );
 
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ ok: true }),
-    };
-  } else {
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ error: "fail" }),
-    };
-  }
+  // if (ok && dataItem.userID === userID) {
+  await ddb.send(
+    new PutItemCommand({
+      TableName: ThisTableName,
+      Item: marshall(object),
+    })
+  );
+
+  return {
+    statusCode: 200,
+    body: JSON.stringify({ ok: true }),
+  };
+  // } else {
+  //   return {
+  //     statusCode: 200,
+  //     body: JSON.stringify({ error: "fail" }),
+  //   };
+  // }
 });
 
 export const remove = ApiHandler(async () => {
@@ -245,16 +245,16 @@ export const remove = ApiHandler(async () => {
 
   let dataItem = unmarshall(data.Item) || { userID: "" };
 
-  if (dataItem.userID === session?.properties?.userID) {
-    await ddb.send(
-      new DeleteItemCommand({
-        TableName: ThisTableName,
-        Key: {
-          oid: { S: `${oid}` },
-        },
-      })
-    );
-  }
+  // if (dataItem.userID === userID) {
+  await ddb.send(
+    new DeleteItemCommand({
+      TableName: ThisTableName,
+      Key: {
+        oid: { S: `${oid}` },
+      },
+    })
+  );
+  // }
 
   return {
     statusCode: 200,

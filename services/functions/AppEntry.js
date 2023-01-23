@@ -161,8 +161,12 @@ export const update = ApiHandler(async () => {
   );
 
   let dataItem = unmarshall(data.Item);
-
-  if (dataItem.slug === object.slug) {
+  dataItem.tags = dataItem.tags || [];
+  object.tags = object.tags || [];
+  if (
+    dataItem.slug === object.slug &&
+    dataItem?.tags?.join("") === object?.tags?.join("")
+  ) {
     return {
       statusCode: 200,
       body: JSON.stringify({ ok: true }),

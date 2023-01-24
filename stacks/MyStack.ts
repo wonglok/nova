@@ -126,9 +126,12 @@ export function MyStack({ stack, app }: StackContext) {
       //
       "GET /": "functions/discovery.handler",
       "GET /script": "functions/script.handler",
-      "POST /import-map": "functions/import-map.handler",
       "GET /session": "functions/session.handler",
 
+      //
+      "POST /import-map": "functions/import-map.handler",
+
+      //
       "GET /bundle/{seg1}/{seg2}/{seg3}/{seg4}": "functions/bundle.handler",
 
       "POST /AppEntry-create": "functions/AppEntry.create",
@@ -144,6 +147,7 @@ export function MyStack({ stack, app }: StackContext) {
       "POST /AppVersion-update": "functions/AppVersion.update",
       "POST /AppVersion-remove": "functions/AppVersion.remove",
       //
+
       "POST /AppGroup-create": "functions/AppGroup.create",
       "POST /AppGroup-get": "functions/AppGroup.get",
       "POST /AppGroup-list": "functions/AppGroup.list",

@@ -75,8 +75,9 @@ export const create = ApiHandler(async () => {
           //
           //
           //
-          // folderID: reqBodyJson.folderID,
           slug: reqBodyJson.slug,
+          abTesting: reqBodyJson.abTesting || [],
+
           // title: reqBodyJson.title,
 
           thumbURL: "",

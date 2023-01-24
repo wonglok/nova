@@ -67,13 +67,10 @@ export const create = ApiHandler(async () => {
       new PutItemCommand({
         TableName: ThisTableName,
         Item: marshall({
-          //
-
           oid: oid,
           userID: session.properties.userID,
           createdAt: new Date().getTime(),
 
-          //
           //
           //
           slug: reqBodyJson.slug,

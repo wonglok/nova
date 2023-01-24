@@ -71,10 +71,8 @@ export const create = ApiHandler(async () => {
           userID: session.properties.userID,
           createdAt: new Date().getTime(),
 
-          //
-          //
-          slug: reqBodyJson.slug,
-          appGroupID: reqBodyJson.appGroupID,
+          // slug: reqBodyJson.slug,
+          // appEntryID: reqBodyJson.appEntryID,
           title: reqBodyJson.title,
 
           mainPackageName: "this-app",
@@ -316,7 +314,7 @@ export const list = ApiHandler(async () => {
 
   const bodyData = JSON.parse(bodyText || JSON.stringify({ oid: "" }));
 
-  let { appGroupID } = bodyData;
+  // let { appEntryID } = bodyData;
 
   let { slug } = bodyData;
   //
@@ -325,12 +323,12 @@ export const list = ApiHandler(async () => {
 
   let data = await ddb.send(
     new ScanCommand({
-      FilterExpression: "appGroupID = :appGroupID",
-      ExpressionAttributeValues: {
-        ":appGroupID": { S: appGroupID },
-        // ":siteID": { S: siteID },
-        // ":userID": { S: userID },
-      },
+      // FilterExpression: "appEntryID = :appEntryID",
+      // ExpressionAttributeValues: {
+      //   ":appEntryID": { S: appEntryID },
+      //   // ":siteID": { S: siteID },
+      //   // ":userID": { S: userID },
+      // },
       TableName: ThisTableName,
     })
   );

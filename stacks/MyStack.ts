@@ -64,6 +64,13 @@ export function MyStack({ stack, app }: StackContext) {
     primaryIndex: { partitionKey: "oid" },
   });
 
+  const AppGroup = new Table(stack, "AppGroup", {
+    fields: {
+      oid: "string",
+    },
+    primaryIndex: { partitionKey: "oid" },
+  });
+
   //
   //
   //
@@ -78,7 +85,9 @@ export function MyStack({ stack, app }: StackContext) {
 
   const MyTables = [
     //
+    AppGroup,
     AppVersion,
+
     AppEntry,
 
     //
@@ -134,6 +143,13 @@ export function MyStack({ stack, app }: StackContext) {
       "POST /AppVersion-list": "functions/AppVersion.list",
       "POST /AppVersion-update": "functions/AppVersion.update",
       "POST /AppVersion-remove": "functions/AppVersion.remove",
+      //
+      "POST /AppGroup-create": "functions/AppGroup.create",
+      "POST /AppGroup-get": "functions/AppGroup.get",
+      "POST /AppGroup-list": "functions/AppGroup.list",
+      "POST /AppGroup-update": "functions/AppGroup.update",
+      "POST /AppGroup-remove": "functions/AppGroup.remove",
+
       //
 
       // "POST /app-code-create": "functions/app-code.create",

@@ -349,25 +349,25 @@ export const list = ApiHandler(async () => {
   };
 });
 
-async function checkTaken({ slug, ddb }) {
-  // Set the parameters.
+// async function checkTaken({ slug, ddb }) {
+//   // Set the parameters.
 
-  let data = { Items: [] };
-  try {
-    data = await ddb.send(
-      new ScanCommand({
-        FilterExpression: "slug = :slug",
-        ExpressionAttributeValues: {
-          ":slug": { S: slug },
-        },
-        TableName: ThisTableName,
-      })
-    );
-  } catch (err) {
-    console.log("Error", err);
-  }
+//   let data = { Items: [] };
+//   try {
+//     data = await ddb.send(
+//       new ScanCommand({
+//         FilterExpression: "slug = :slug",
+//         ExpressionAttributeValues: {
+//           ":slug": { S: slug },
+//         },
+//         TableName: ThisTableName,
+//       })
+//     );
+//   } catch (err) {
+//     console.log("Error", err);
+//   }
 
-  return data.Items.length === 0;
-}
+//   return data.Items.length === 0;
+// }
 
-//
+// //

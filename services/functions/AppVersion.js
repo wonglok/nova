@@ -77,6 +77,9 @@ export const create = ApiHandler(async () => {
           appEntryID: reqBodyJson.appEntryID,
           title: reqBodyJson.title,
 
+          mainPackageName: "this-app",
+          codePackages: [],
+
           thumbURL: "",
         }),
       })

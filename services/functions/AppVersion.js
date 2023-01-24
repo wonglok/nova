@@ -152,23 +152,23 @@ export const update = ApiHandler(async () => {
 
   const ddb = new DynamoDBClient({});
 
-  let data = await ddb.send(
-    new GetItemCommand({
-      TableName: ThisTableName,
-      Key: {
-        oid: { S: `${object.oid}` },
-      },
-    })
-  );
+  // let data = await ddb.send(
+  //   new GetItemCommand({
+  //     TableName: ThisTableName,
+  //     Key: {
+  //       oid: { S: `${object.oid}` },
+  //     },
+  //   })
+  // );
 
-  let dataItem = unmarshall(data.Item);
+  // let dataItem = unmarshall(data.Item);
 
-  if (dataItem.slug === object.slug) {
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ ok: true }),
-    };
-  }
+  // if (dataItem.slug === object.slug) {
+  //   return {
+  //     statusCode: 200,
+  //     body: JSON.stringify({ ok: true }),
+  //   };
+  // }
 
   // let ok = await checkTaken({ slug: object.slug, ddb });
 
@@ -183,7 +183,8 @@ export const update = ApiHandler(async () => {
   // console.log(userID);
 
   // let ok = true;
-  if (ok && dataItem.userID === userID) {
+  if (ok) {
+    // if (ok && dataItem.userID === userID) {
     await ddb.send(
       new PutItemCommand({
         TableName: ThisTableName,

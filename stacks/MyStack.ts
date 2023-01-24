@@ -89,7 +89,7 @@ export function MyStack({ stack, app }: StackContext) {
   const auth = new Auth(stack, "auth", {
     authenticator: {
       environment: {
-        SITE_URL: PRODUCTION_SITE_URL,
+        PRODUCTION_SITE_URL: PRODUCTION_SITE_URL,
         GOOGLE_CLIENT_ID: GOOGLE_CLIENT_ID,
         LOCAL_SITE_URL: LOCAL_SITE_URL,
       },

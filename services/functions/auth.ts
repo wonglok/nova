@@ -48,9 +48,9 @@ export const getGuestID = function () {
   );
 };
 
-const SITE_URL = process.env.SITE_URL || ``;
-const GOOGLE_CLIENT_ID: string = process.env.GOOGLE_CLIENT_ID || "";
-let localURL = process.env.LOCAL_SITE_URL || `https://wonglok.ap.ngrok.io`;
+const PRODUCTION_SITE_URL = process.env.PRODUCTION_SITE_URL || ``;
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || "";
+const LOCAL_SITE_URL = process.env.LOCAL_SITE_URL || ``;
 
 let LocalGuestAdapter =
   (_: any) => (): Promise<APIGatewayProxyStructuredResultV2> => {
@@ -84,8 +84,10 @@ let LocalGuestAdapter =
 
         return resolve(
           Session.parameter({
-            // redirect: process.env.IS_LOCAL ? localURL : SITE_URL,
-            redirect: process.env.IS_LOCAL ? `http://localhost:3000` : SITE_URL,
+            // redirect: process.env.IS_LOCAL ? LOCAL_SITE_URL : PRODUCTION_SITE_URL,
+            redirect: process.env.IS_LOCAL
+              ? `http://localhost:3000`
+              : PRODUCTION_SITE_URL,
 
             // redirect: "http://127.0.0.1:5173",
             type: "user",
@@ -141,8 +143,10 @@ let GuestAdapter =
 
         return resolve(
           Session.parameter({
-            redirect: process.env.IS_LOCAL ? localURL : SITE_URL,
-            // redirect: process.env.IS_LOCAL ? `http://localhost:3000` : SITE_URL,
+            redirect: process.env.IS_LOCAL
+              ? LOCAL_SITE_URL
+              : PRODUCTION_SITE_URL,
+            // redirect: process.env.IS_LOCAL ? `http://localhost:3000` : PRODUCTION_SITE_URL,
 
             // redirect: "http://127.0.0.1:5173",
             type: "user",
@@ -222,7 +226,7 @@ let WalletAdapter =
             Session.parameter({
               redirect: process.env.IS_LOCAL
                 ? `http://localhost:3000`
-                : SITE_URL,
+                : PRODUCTION_SITE_URL,
 
               // redirect: "http://127.0.0.1:5173",
               type: "user",
@@ -288,7 +292,7 @@ export const handler = AuthHandler({
         );
 
         return Session.parameter({
-          redirect: process.env.IS_LOCAL ? localURL : SITE_URL,
+          redirect: process.env.IS_LOCAL ? LOCAL_SITE_URL : PRODUCTION_SITE_URL,
 
           // redirect: "http://127.0.0.1:5173",
           type: "user",

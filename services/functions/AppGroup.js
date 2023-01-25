@@ -15,7 +15,7 @@ import { v4 } from "uuid";
 import slugify from "slugify";
 import { SITE_ADMINS } from "../../stacks/Config";
 
-export const ThisTableName = Table.AppVersion.tableName;
+export const ThisTableName = Table.AppGroup.tableName;
 
 export const create = ApiHandler(async () => {
   let statusCode = 200;

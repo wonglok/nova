@@ -3,6 +3,9 @@ export const PRODUCTION_SITE_URL = `https://genesis.agape.land`;
 export const LOCAL_SITE_URL = `https://localhost:3000/`;
 
 export const SITE_ADMINS = [
+  // wallet address
   "0x15cA2Eee6774E363fA5bbfA9E44120B89e4C7c1B",
+
+  // gmail
   "yellowhappy831@gmail.com",
 ];

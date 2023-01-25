@@ -75,10 +75,10 @@ export const create = ApiHandler(async () => {
           //
           slug: reqBodyJson.slug,
           appGroupID: reqBodyJson.appGroupID,
-          title: reqBodyJson.title,
 
-          mainPackageName: "this-app",
-          codePackages: [],
+          appLoader: "this-app",
+          appPackages: [],
+          appAssets: [],
 
           thumbURL: "",
         }),

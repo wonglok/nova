@@ -71,6 +71,15 @@ export function MyStack({ stack, app }: StackContext) {
     primaryIndex: { partitionKey: "oid" },
   });
 
+  const AppCodeFile = new Table(stack, "AppCodeFile", {
+    fields: {
+      oid: "string",
+    },
+    primaryIndex: { partitionKey: "oid" },
+  });
+
+  //AppCodeFile
+
   //
   //
   //
@@ -84,6 +93,7 @@ export function MyStack({ stack, app }: StackContext) {
   //
 
   const MyTables = [
+    AppCodeFile,
     //
     AppGroup,
     AppVersion,
@@ -154,6 +164,13 @@ export function MyStack({ stack, app }: StackContext) {
       "POST /AppGroup-update": "functions/AppGroup.update",
       "POST /AppGroup-remove": "functions/AppGroup.remove",
 
+      "POST /AppCodeFile-create": "functions/AppCodeFile.create",
+      "POST /AppCodeFile-get": "functions/AppCodeFile.get",
+      "POST /AppCodeFile-list": "functions/AppCodeFile.list",
+      "POST /AppCodeFile-update": "functions/AppCodeFile.update",
+      "POST /AppCodeFile-remove": "functions/AppCodeFile.remove",
+
+      //
       //
 
       // "POST /app-code-create": "functions/app-code.create",

@@ -298,6 +298,62 @@ export const get = ApiHandler(async () => {
   };
 });
 
+export const querySlug = ApiHandler(async () => {
+  const bodyText = useBody();
+
+  const bodyData = JSON.parse(bodyText || JSON.stringify({ oid: "" }));
+
+  let { slug } = bodyData;
+  //
+
+  const ddb = new DynamoDBClient({});
+
+  let data = await ddb.send(
+    new ScanCommand({
+      FilterExpression: "slug = :slug",
+      ExpressionAttributeValues: {
+        ":slug": { S: slug },
+        // ":siteID": { S: siteID },
+        // ":userID": { S: userID },
+      },
+      TableName: ThisTableName,
+    })
+  );
+
+  let list = (data.Items || [])
+    .filter((e) => e)
+    .map((e) => unmarshall(e))
+    .map((e) => {
+      let newitem = { ...e };
+      // delete newitem.seo;
+      return newitem;
+    });
+
+  let first = list[0];
+
+  if (first) {
+    // //
+    // let data = await ddb.send(
+    //   new ScanCommand({
+    //     FilterExpression: "slug = :slug",
+    //     ExpressionAttributeValues: {
+    //       ":slug": { S: slug },
+    //       // ":siteID": { S: siteID },
+    //       // ":userID": { S: userID },
+    //     },
+    //     TableName: AppGroupID,
+    //   })
+    // );
+  }
+
+  return {
+    statusCode: 200,
+    body: JSON.stringify({
+      list: list,
+    }),
+  };
+});
+
 export const list = ApiHandler(async () => {
   const session = useSession();
 

@@ -302,19 +302,19 @@ export const get = ApiHandler(async () => {
 });
 
 export const list = ApiHandler(async () => {
-  const session = useSession();
+  // const session = useSession();
 
   // // Check user is authenticated
-  if (session.type !== "user") {
-    throw new Error("Not authenticated");
-  }
+  // if (session.type !== "user") {
+  //   throw new Error("Not authenticated");
+  // }
 
-  if (!SITE_ADMINS.some((admin) => admin === session.properties.userID)) {
-    throw new Error("Not admin");
-  }
+  // if (!SITE_ADMINS.some((admin) => admin === session.properties.userID)) {
+  //   throw new Error("Not admin");
+  // }
 
-  //
-  const userID = session.properties.userID;
+  // //
+  // const userID = session.properties.userID;
 
   const bodyText = useBody();
 
@@ -330,7 +330,7 @@ export const list = ApiHandler(async () => {
     new ScanCommand({
       FilterExpression: "appVersionID = :appVersionID",
       ExpressionAttributeValues: {
-        ":appVersionID": { S: appVersionID },
+        ":appVersionID": { S: appVersionID || "_____" },
         // ":siteID": { S: siteID },
         // ":userID": { S: userID },
       },

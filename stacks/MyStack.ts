@@ -149,6 +149,7 @@ export function MyStack({ stack, app }: StackContext) {
       "POST /AppEntry-list": "functions/AppEntry.list",
       "POST /AppEntry-update": "functions/AppEntry.update",
       "POST /AppEntry-remove": "functions/AppEntry.remove",
+      "POST /AppEntry-querySlug": "functions/AppEntry.querySlug",
       //
 
       "POST /AppVersion-create": "functions/AppVersion.create",

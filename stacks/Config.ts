@@ -8,4 +8,7 @@ export const SITE_ADMINS = [
 
   // gmail
   "yellowhappy831@gmail.com",
+
+  // bear
+  "0x678Eb523ae9d0cFb0F7373ce1b94Ba4Afe94E303",
 ];

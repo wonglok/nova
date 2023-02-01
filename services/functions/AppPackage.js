@@ -8,6 +8,7 @@ import {
   DeleteItemCommand,
   // GetItemCommand,
   ScanCommand,
+  BatchWriteItemCommand,
 } from "@aws-sdk/client-dynamodb";
 import { marshall, unmarshall } from "@aws-sdk/util-dynamodb";
 import { useSession } from "@serverless-stack/node/auth";
@@ -110,32 +111,72 @@ export const importCode = ApiHandler(async () => {
       })
     );
 
-    let commandsArr = [];
-    for (let file of codeFiles) {
-      commandsArr.push(
-        new PutItemCommand({
-          TableName: AppCodeFile,
-          Item: marshall({
-            oid: getID(),
-            userID: session.properties.userID,
-            createdAt: new Date().getTime(),
+    // Set the parameters
+    const params = {
+      RequestItems: {
+        [AppCodeFile]: [
+          // {
+          //   PutRequest: {
+          //     Item: {
+          //       KEY: { N: "KEY_VALUE" },
+          //       ATTRIBUTE_1: { S: "ATTRIBUTE_1_VALUE" },
+          //       ATTRIBUTE_2: { N: "ATTRIBUTE_2_VALUE" },
+          //     },
+          //   },
+          // },
 
-            appGroupID: appVersionObject.appGroupID,
-            appVersionID: appVersionObject.oid,
+          ...codeFiles.map((file) => {
+            return {
+              PutRequest: {
+                Item: marshall({
+                  oid: getID(),
+                  userID: session.properties.userID,
+                  createdAt: new Date().getTime(),
 
-            // filter for each module
-            packageOID: file.packageOID,
-            moduleOID: file.moduleOID,
+                  appGroupID: appVersionObject.appGroupID,
+                  appVersionID: appVersionObject.oid,
 
-            //
-            fileName: file.fileName || "app.js",
-            content: file.content || "",
+                  // filter for each module
+                  packageOID: file.packageOID,
+                  moduleOID: file.moduleOID,
+
+                  //
+                  fileName: file.fileName || "app.js",
+                  content: file.content || "",
+                }),
+              },
+            };
           }),
-        })
-      );
-    }
+        ],
+      },
+    };
 
-    await ddb.send(commandsArr).catch((r) => {
+    // let commandsArr = [];
+    // for (let file of codeFiles) {
+    //   commandsArr.push(
+    //     new PutItemCommand({
+    //       TableName: AppCodeFile,
+    //       Item: marshall({
+    //         oid: getID(),
+    //         userID: session.properties.userID,
+    //         createdAt: new Date().getTime(),
+
+    //         appGroupID: appVersionObject.appGroupID,
+    //         appVersionID: appVersionObject.oid,
+
+    //         // filter for each module
+    //         packageOID: file.packageOID,
+    //         moduleOID: file.moduleOID,
+
+    //         //
+    //         fileName: file.fileName || "app.js",
+    //         content: file.content || "",
+    //       }),
+    //     })
+    //   );
+    // }
+
+    await ddb.send(new BatchWriteItemCommand(params)).catch((r) => {
       console.error(r);
     });
 

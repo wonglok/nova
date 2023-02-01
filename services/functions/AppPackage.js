@@ -108,7 +108,7 @@ export const importCode = ApiHandler(async () => {
         new PutItemCommand({
           TableName: AppCodeFile,
           Item: marshall({
-            oid: oid,
+            oid: file.oid,
             userID: session.properties.userID,
             createdAt: new Date().getTime(),
 

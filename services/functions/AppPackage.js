@@ -114,8 +114,8 @@ export const importCode = ApiHandler(async () => {
 
             //
 
-            appGroupID: reqBodyJson.appGroupID,
-            appVersionID: reqBodyJson.appVersionID,
+            appGroupID: appVersionObject.appGroupID,
+            appVersionID: appVersionObject.appVersionID,
 
             // filter for each module
             packageOID: file.packageOID,

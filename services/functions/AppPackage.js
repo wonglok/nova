@@ -110,37 +110,38 @@ export const importCode = ApiHandler(async () => {
       })
     );
 
+    let commandsArr = [];
     for (let file of codeFiles) {
-      await ddb
-        .send(
-          new PutItemCommand({
-            TableName: AppCodeFile,
-            Item: marshall({
-              oid: getID(),
-              userID: session.properties.userID,
-              createdAt: new Date().getTime(),
+      commandsArr.push(
+        new PutItemCommand({
+          TableName: AppCodeFile,
+          Item: marshall({
+            oid: getID(),
+            userID: session.properties.userID,
+            createdAt: new Date().getTime(),
 
-              appGroupID: appVersionObject.appGroupID,
-              appVersionID: appVersionObject.oid,
+            appGroupID: appVersionObject.appGroupID,
+            appVersionID: appVersionObject.oid,
 
-              // filter for each module
-              packageOID: file.packageOID,
-              moduleOID: file.moduleOID,
+            // filter for each module
+            packageOID: file.packageOID,
+            moduleOID: file.moduleOID,
 
-              //
-              fileName: file.fileName || "app.js",
-              content: file.content || "",
-            }),
-          })
-        )
-        .catch((r) => {
-          console.error(r);
-        });
-
-      await new Promise((r) => {
-        setTimeout(r, 100);
-      });
+            //
+            fileName: file.fileName || "app.js",
+            content: file.content || "",
+          }),
+        })
+      );
     }
+
+    await ddb.send(commandsArr).catch((r) => {
+      console.error(r);
+    });
+
+    await new Promise((r) => {
+      setTimeout(r, 100);
+    });
 
     return {
       statusCode,

@@ -19,12 +19,13 @@ export const AppVersion = Table.AppVersion.tableName;
 export const AppCodeFile = Table.AppCodeFile.tableName;
 
 export const getID = function () {
-  return (
-    "_" +
-    Math.random().toString(36).substr(2, 9) +
-    Math.random().toString(36).substr(2, 9) +
-    Math.random().toString(36).substr(2, 9)
-  );
+  return v4() + "";
+  // return (
+  //   "_" +
+  //   Math.random().toString(36).substr(2, 9) +
+  //   Math.random().toString(36).substr(2, 9) +
+  //   Math.random().toString(36).substr(2, 9)
+  // );
 };
 
 export const importCode = ApiHandler(async () => {

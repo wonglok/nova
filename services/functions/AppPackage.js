@@ -91,10 +91,10 @@ export const importCode = ApiHandler(async () => {
       it.moduleOID = get(it.moduleOID);
     });
 
+    console.log(JSON.stringify(appVersionObject, null, "  "));
+
     appVersionObject.appPackages //= getID();
       .push(appPackageOne);
-
-    // console.log("reqBodyJson", reqBodyJson);
 
     await ddb.send(
       new PutItemCommand({
@@ -104,29 +104,31 @@ export const importCode = ApiHandler(async () => {
     );
 
     for (let file of codeFiles) {
-      await ddb.send(
-        new PutItemCommand({
-          TableName: AppCodeFile,
-          Item: marshall({
-            oid: file.oid,
-            userID: session.properties.userID,
-            createdAt: new Date().getTime(),
+      await ddb
+        .send(
+          new PutItemCommand({
+            TableName: AppCodeFile,
+            Item: marshall({
+              oid: file.oid,
+              userID: session.properties.userID,
+              createdAt: new Date().getTime(),
 
-            //
+              appGroupID: appVersionObject.appGroupID,
+              appVersionID: appVersionObject.oid,
 
-            appGroupID: appVersionObject.appGroupID,
-            appVersionID: appVersionObject.appVersionID,
+              // filter for each module
+              packageOID: file.packageOID,
+              moduleOID: file.moduleOID,
 
-            // filter for each module
-            packageOID: file.packageOID,
-            moduleOID: file.moduleOID,
-
-            //
-            fileName: file.fileName || "app.js",
-            content: file.content || "",
-          }),
-        })
-      );
+              //
+              fileName: file.fileName || "app.js",
+              content: file.content || "",
+            }),
+          })
+        )
+        .catch((r) => {
+          console.error(r);
+        });
     }
 
     return {

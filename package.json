@@ -5,7 +5,8 @@
   "scripts": {
     "start": "sst start",
     "build": "sst build",
-    "deploy": "npm run deployTest; npm run deployProd; sst start",
+    "deploy": "npm run deployTest; npm run deployProd;",
+    "deployDev": "npm run deployTest; npm run deployProd; sst start",
     "deployProd": "npx sst deploy --stage prod",
     "deployTest": "npx sst deploy --stage test",
     "remove": "sst remove",

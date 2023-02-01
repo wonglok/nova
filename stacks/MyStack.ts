@@ -172,6 +172,9 @@ export function MyStack({ stack, app }: StackContext) {
       "POST /AppCodeFile-remove": "functions/AppCodeFile.remove",
 
       //
+      "POST /AppPackage-importCode": "functions/AppPackage.importCode",
+
+      //
       //
 
       // "POST /app-code-create": "functions/app-code.create",

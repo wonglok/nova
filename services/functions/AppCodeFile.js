@@ -330,7 +330,7 @@ export const list = ApiHandler(async () => {
     new ScanCommand({
       FilterExpression: "appVersionID = :appVersionID",
       ExpressionAttributeValues: {
-        ":appVersionID": { S: appVersionID || "_____" },
+        ":appVersionID": { S: appVersionID },
         // ":siteID": { S: siteID },
         // ":userID": { S: userID },
       },

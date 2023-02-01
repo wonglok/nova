@@ -80,15 +80,22 @@ export const importCode = ApiHandler(async () => {
       return map.get(key);
     };
 
+    let oldPackID = appPackageOne.oid;
     appPackageOne.oid = set(appPackageOne.oid);
     appPackageOne.modules.forEach((it) => {
-      it.oid = set(it.oid);
+      let oldModID = it.oid;
+      it.oid = getID();
+
+      codeFiles
+        .filter((e) => e.moduleOID === oldModID && e.packageOID === oldPackID)
+        .forEach((c) => {
+          c.moduleOID = it.oid;
+          c.packageOID = appPackageOne.oid;
+        });
     });
 
     codeFiles.forEach((it) => {
-      it.oid = set(it.oid);
-      it.packageOID = get(it.packageOID);
-      it.moduleOID = get(it.moduleOID);
+      it.oid = getID();
     });
 
     appVersionObject.appPackages //= getID();
@@ -107,7 +114,7 @@ export const importCode = ApiHandler(async () => {
           new PutItemCommand({
             TableName: AppCodeFile,
             Item: marshall({
-              oid: file.oid,
+              oid: getID(),
               userID: session.properties.userID,
               createdAt: new Date().getTime(),
 

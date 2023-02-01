@@ -13,8 +13,8 @@ import {
 import { marshall, unmarshall } from "@aws-sdk/util-dynamodb";
 import { useSession } from "@serverless-stack/node/auth";
 import { v4 } from "uuid";
-import slugify from "slugify";
 import { SITE_ADMINS } from "../../stacks/Config";
+import slugify from "slugify";
 
 export const AppVersion = Table.AppVersion.tableName;
 export const AppCodeFile = Table.AppCodeFile.tableName;

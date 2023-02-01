@@ -138,7 +138,7 @@ export const importCode = ApiHandler(async () => {
         });
 
       await new Promise((r) => {
-        setTimeout(r, 50);
+        setTimeout(r, 100);
       });
     }
 

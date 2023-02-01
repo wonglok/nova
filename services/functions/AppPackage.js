@@ -91,8 +91,6 @@ export const importCode = ApiHandler(async () => {
       it.moduleOID = get(it.moduleOID);
     });
 
-    console.log(JSON.stringify(appVersionObject, null, "  "));
-
     appVersionObject.appPackages //= getID();
       .push(appPackageOne);
 

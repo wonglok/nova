@@ -260,16 +260,16 @@ export const remove = ApiHandler(async () => {
 });
 
 export const get = ApiHandler(async () => {
-  const session = useSession();
+  // const session = useSession();
 
   // // Check user is authenticated
-  if (session.type !== "user") {
-    throw new Error("Not authenticated");
-  }
+  // if (session.type !== "user") {
+  //   throw new Error("Not authenticated");
+  // }
 
-  if (!SITE_ADMINS.some((admin) => admin === session.properties.userID)) {
-    throw new Error("Not admin");
-  }
+  // if (!SITE_ADMINS.some((admin) => admin === session.properties.userID)) {
+  //   throw new Error("Not admin");
+  // }
 
   // const userID = session.properties.userID;
 

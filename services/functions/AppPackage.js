@@ -72,37 +72,63 @@ export const importCode = ApiHandler(async () => {
     let appVersionObject = unmarshall(data.Item);
 
     let appPackageOne = reqBodyJson.codePackage;
-    let codeFiles = reqBodyJson.codeFiles;
 
-    let map = new Map();
-    let set = (key) => {
-      map.set(key, getID());
-      return map.get(key);
-    };
-    let get = (key) => {
-      return map.get(key);
-    };
+    let newPackageOID = getID();
 
-    let oldPackID = appPackageOne.oid;
-    appPackageOne.oid = getID();
-    appPackageOne.modules.forEach((it) => {
-      let oldModID = it.oid;
-      it.oid = getID();
+    appPackageOne.oid = newPackageOID;
 
-      codeFiles
-        .filter((e) => e.moduleOID === oldModID && e.packageOID === oldPackID)
-        .forEach((c) => {
-          c.moduleOID = it.oid;
-          c.packageOID = appPackageOne.oid;
-        });
-    });
+    for (let modu of appPackageOne.modules) {
+      let newModuOID = getID();
+      let codeFilesData = JSON.parse(JSON.stringify(modu.files));
+      modu.files = [];
+      modu.oid = newModuOID;
 
-    codeFiles.forEach((it) => {
-      it.oid = getID();
-    });
+      const params = {
+        RequestItems: {
+          [AppCodeFile]: [
+            // {
+            //   PutRequest: {
+            //     Item: {
+            //       KEY: { N: "KEY_VALUE" },
+            //       ATTRIBUTE_1: { S: "ATTRIBUTE_1_VALUE" },
+            //       ATTRIBUTE_2: { N: "ATTRIBUTE_2_VALUE" },
+            //     },
+            //   },
+            // },
 
-    appVersionObject.appPackages //= getID();
-      .push(appPackageOne);
+            ...codeFilesData.map((file) => {
+              file.packageOID = newPackageOID;
+              file.moduleOID = newModuOID;
+              return {
+                PutRequest: {
+                  Item: marshall({
+                    oid: getID(),
+                    userID: session.properties.userID,
+                    createdAt: new Date().getTime(),
+
+                    appGroupID: appVersionObject.appGroupID,
+                    appVersionID: appVersionObject.oid,
+
+                    // filter for each module
+                    packageOID: file.packageOID,
+                    moduleOID: file.moduleOID,
+
+                    fileName: file.fileName || "app.js",
+                    content: file.content || "",
+                  }),
+                },
+              };
+            }),
+          ],
+        },
+      };
+
+      await ddb.send(new BatchWriteItemCommand(params)).catch((r) => {
+        console.error(r);
+      });
+    }
+
+    appVersionObject.appPackages.push(appPackageOne);
 
     await ddb.send(
       new PutItemCommand({
@@ -111,74 +137,106 @@ export const importCode = ApiHandler(async () => {
       })
     );
 
-    // Set the parameters
-    const params = {
-      RequestItems: {
-        [AppCodeFile]: [
-          // {
-          //   PutRequest: {
-          //     Item: {
-          //       KEY: { N: "KEY_VALUE" },
-          //       ATTRIBUTE_1: { S: "ATTRIBUTE_1_VALUE" },
-          //       ATTRIBUTE_2: { N: "ATTRIBUTE_2_VALUE" },
-          //     },
-          //   },
-          // },
+    // let codeFiles = reqBodyJson.codeFiles;
 
-          ...codeFiles.map((file) => {
-            return {
-              PutRequest: {
-                Item: marshall({
-                  oid: getID(),
-                  userID: session.properties.userID,
-                  createdAt: new Date().getTime(),
+    // let map = new Map();
+    // let set = (key) => {
+    //   map.set(key, getID());
+    //   return map.get(key);
+    // };
+    // let get = (key) => {
+    //   return map.get(key);
+    // };
 
-                  appGroupID: appVersionObject.appGroupID,
-                  appVersionID: appVersionObject.oid,
+    // let oldPackID = appPackageOne.oid;
+    // appPackageOne.oid = getID();
+    // appPackageOne.modules.forEach((it) => {
+    //   let oldModID = it.oid;
+    //   it.oid = getID();
 
-                  // filter for each module
-                  packageOID: file.packageOID,
-                  moduleOID: file.moduleOID,
+    //   codeFiles
+    //     .filter((e) => e.moduleOID === oldModID && e.packageOID === oldPackID)
+    //     .forEach((c) => {
+    //       c.moduleOID = it.oid;
+    //       c.packageOID = appPackageOne.oid;
+    //     });
+    // });
 
-                  //
-                  fileName: file.fileName || "app.js",
-                  content: file.content || "",
-                }),
-              },
-            };
-          }),
-        ],
-      },
-    };
+    // codeFiles.forEach((it) => {
+    //   it.oid = getID();
+    // });
 
-    // let commandsArr = [];
-    // for (let file of codeFiles) {
-    //   commandsArr.push(
-    //     new PutItemCommand({
-    //       TableName: AppCodeFile,
-    //       Item: marshall({
-    //         oid: getID(),
-    //         userID: session.properties.userID,
-    //         createdAt: new Date().getTime(),
+    // appVersionObject.appPackages //= getID();
+    //   .push(appPackageOne);
 
-    //         appGroupID: appVersionObject.appGroupID,
-    //         appVersionID: appVersionObject.oid,
+    // // Set the parameters
+    // const params = {
+    //   RequestItems: {
+    //     [AppCodeFile]: [
+    //       // {
+    //       //   PutRequest: {
+    //       //     Item: {
+    //       //       KEY: { N: "KEY_VALUE" },
+    //       //       ATTRIBUTE_1: { S: "ATTRIBUTE_1_VALUE" },
+    //       //       ATTRIBUTE_2: { N: "ATTRIBUTE_2_VALUE" },
+    //       //     },
+    //       //   },
+    //       // },
 
-    //         // filter for each module
-    //         packageOID: file.packageOID,
-    //         moduleOID: file.moduleOID,
+    //       ...codeFiles.map((file) => {
+    //         return {
+    //           PutRequest: {
+    //             Item: marshall({
+    //               oid: getID(),
+    //               userID: session.properties.userID,
+    //               createdAt: new Date().getTime(),
 
-    //         //
-    //         fileName: file.fileName || "app.js",
-    //         content: file.content || "",
+    //               appGroupID: appVersionObject.appGroupID,
+    //               appVersionID: appVersionObject.oid,
+
+    //               // filter for each module
+    //               packageOID: file.packageOID,
+    //               moduleOID: file.moduleOID,
+
+    //               //
+    //               fileName: file.fileName || "app.js",
+    //               content: file.content || "",
+    //             }),
+    //           },
+    //         };
     //       }),
-    //     })
-    //   );
-    // }
+    //     ],
+    //   },
+    // };
 
-    await ddb.send(new BatchWriteItemCommand(params)).catch((r) => {
-      console.error(r);
-    });
+    // // let commandsArr = [];
+    // // for (let file of codeFiles) {
+    // //   commandsArr.push(
+    // //     new PutItemCommand({
+    // //       TableName: AppCodeFile,
+    // //       Item: marshall({
+    // //         oid: getID(),
+    // //         userID: session.properties.userID,
+    // //         createdAt: new Date().getTime(),
+
+    // //         appGroupID: appVersionObject.appGroupID,
+    // //         appVersionID: appVersionObject.oid,
+
+    // //         // filter for each module
+    // //         packageOID: file.packageOID,
+    // //         moduleOID: file.moduleOID,
+
+    // //         //
+    // //         fileName: file.fileName || "app.js",
+    // //         content: file.content || "",
+    // //       }),
+    // //     })
+    // //   );
+    // // }
+
+    // await ddb.send(new BatchWriteItemCommand(params)).catch((r) => {
+    //   console.error(r);
+    // });
 
     await new Promise((r) => {
       setTimeout(r, 100);

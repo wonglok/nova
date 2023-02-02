@@ -84,7 +84,7 @@ export const importCode = ApiHandler(async () => {
     };
 
     let oldPackID = appPackageOne.oid;
-    appPackageOne.oid = set(appPackageOne.oid);
+    appPackageOne.oid = getID();
     appPackageOne.modules.forEach((it) => {
       let oldModID = it.oid;
       it.oid = getID();

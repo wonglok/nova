@@ -75,11 +75,9 @@ export const importCode = ApiHandler(async () => {
 
     let inboundAppPackages = appSource.appPackages;
 
-    //
+    //!SECTION
 
     for (let appPackageOne of inboundAppPackages) {
-      //
-
       let newPackageOID = getID();
 
       appPackageOne.oid = newPackageOID;

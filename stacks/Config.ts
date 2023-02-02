@@ -11,4 +11,7 @@ export const SITE_ADMINS = [
 
   // bear
   "0x678Eb523ae9d0cFb0F7373ce1b94Ba4Afe94E303",
+
+  // harry
+  "0xC882C14BBD18f6022E38c8bd3eF3a099BF2c2210",
 ];

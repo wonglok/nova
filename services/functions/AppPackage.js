@@ -134,6 +134,11 @@ export const importCode = ApiHandler(async () => {
       }
 
       appVersionObject.appPackages.push(appPackageOne);
+
+      await new Promise((res) => {
+        //!SECTION
+        setTimeout(res, 100);
+      });
     }
 
     await ddb.send(

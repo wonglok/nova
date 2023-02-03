@@ -5,16 +5,16 @@ import {
   DynamoDBClient,
   GetItemCommand,
   PutItemCommand,
-  DeleteItemCommand,
-  // GetItemCommand,
-  ScanCommand,
-  BatchWriteItemCommand,
+  // DeleteItemCommand,
+  // // GetItemCommand,
+  // ScanCommand,
+  // BatchWriteItemCommand,
 } from "@aws-sdk/client-dynamodb";
 import { marshall, unmarshall } from "@aws-sdk/util-dynamodb";
 import { useSession } from "@serverless-stack/node/auth";
 import { v4 } from "uuid";
 import { SITE_ADMINS } from "../../stacks/Config";
-import slugify from "slugify";
+// import slugify from "slugify";
 
 export const AppVersion = Table.AppVersion.tableName;
 export const AppCodeFile = Table.AppCodeFile.tableName;
@@ -28,9 +28,9 @@ export const getID = function () {
   //   Math.random().toString(36).substr(2, 9)
   // );
 };
-const ddb = new DynamoDBClient({});
 
 export const importCode = ApiHandler(async () => {
+  const ddb = new DynamoDBClient({});
   let statusCode = 200;
   let returnBody = JSON.stringify({});
   const session = useSession();

@@ -215,10 +215,10 @@ export const remove = ApiHandler(async () => {
     throw new Error("Not admin");
   }
 
-  // // Check user is authenticated
-  // if (session.type !== "user") {
-  //   throw new Error("Not authenticated");
-  // }
+  // Check user is authenticated
+  if (session.type !== "user") {
+    throw new Error("Not authenticated");
+  }
 
   const userID = session.properties.userID;
 
@@ -243,16 +243,17 @@ export const remove = ApiHandler(async () => {
 
   let dataItem = unmarshall(data.Item) || { userID: "" };
 
-  if (dataItem.userID === session?.properties?.userID) {
-    await ddb.send(
-      new DeleteItemCommand({
-        TableName: ThisTableName,
-        Key: {
-          oid: { S: `${oid}` },
-        },
-      })
-    );
-  }
+  // if (dataItem.userID === session?.properties?.userID) {
+  await ddb.send(
+    new DeleteItemCommand({
+      TableName: ThisTableName,
+      Key: {
+        oid: { S: `${oid}` },
+      },
+    })
+  );
+
+  // }
 
   return {
     statusCode: 200,

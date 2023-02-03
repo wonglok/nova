@@ -87,49 +87,35 @@ export const importCode = ApiHandler(async () => {
         modu.files = [];
         modu.oid = newModuOID;
 
-        const params = {
-          RequestItems: {
-            [AppCodeFile]: [
-              // {
-              //   PutRequest: {
-              //     Item: {
-              //       KEY: { N: "KEY_VALUE" },
-              //       ATTRIBUTE_1: { S: "ATTRIBUTE_1_VALUE" },
-              //       ATTRIBUTE_2: { N: "ATTRIBUTE_2_VALUE" },
-              //     },
-              //   },
-              // },
+        for (let file of codeFilesData) {
+          file.packageOID = newPackageOID;
+          file.moduleOID = newModuOID;
+          await ddb.send(
+            new PutItemCommand({
+              TableName: AppCodeFile,
+              Item: marshall({
+                oid: getID(),
+                userID: session.properties.userID,
+                createdAt: new Date().getTime(),
 
-              ...codeFilesData.map((file) => {
-                file.packageOID = newPackageOID;
-                file.moduleOID = newModuOID;
-                return {
-                  PutRequest: {
-                    Item: marshall({
-                      oid: getID(),
-                      userID: session.properties.userID,
-                      createdAt: new Date().getTime(),
+                appGroupID: appVersionObject.appGroupID,
+                appVersionID: appVersionObject.oid,
 
-                      appGroupID: appVersionObject.appGroupID,
-                      appVersionID: appVersionObject.oid,
+                // filter for each module
+                packageOID: file.packageOID,
+                moduleOID: file.moduleOID,
 
-                      // filter for each module
-                      packageOID: file.packageOID,
-                      moduleOID: file.moduleOID,
-
-                      fileName: file.fileName || "app.js",
-                      content: file.content || "",
-                    }),
-                  },
-                };
+                fileName: file.fileName || "app.js",
+                content: file.content || "",
               }),
-            ],
-          },
-        };
+            })
+          );
+          await new Promise((res) => {
+            //!SECTION
+            setTimeout(res, 50);
+          });
+        }
 
-        await ddb.send(new BatchWriteItemCommand(params)).catch((r) => {
-          console.error(r);
-        });
         await new Promise((res) => {
           //!SECTION
           setTimeout(res, 50);
@@ -176,3 +162,47 @@ export const importCode = ApiHandler(async () => {
     };
   }
 });
+
+// const params = {
+//   RequestItems: {
+//     [AppCodeFile]: [
+//       // {
+//       //   PutRequest: {
+//       //     Item: {
+//       //       KEY: { N: "KEY_VALUE" },
+//       //       ATTRIBUTE_1: { S: "ATTRIBUTE_1_VALUE" },
+//       //       ATTRIBUTE_2: { N: "ATTRIBUTE_2_VALUE" },
+//       //     },
+//       //   },
+//       // },
+
+//       ...codeFilesData.map((file) => {
+//         file.packageOID = newPackageOID;
+//         file.moduleOID = newModuOID;
+//         return {
+//           PutRequest: {
+//             Item: marshall({
+//               oid: getID(),
+//               userID: session.properties.userID,
+//               createdAt: new Date().getTime(),
+
+//               appGroupID: appVersionObject.appGroupID,
+//               appVersionID: appVersionObject.oid,
+
+//               // filter for each module
+//               packageOID: file.packageOID,
+//               moduleOID: file.moduleOID,
+
+//               fileName: file.fileName || "app.js",
+//               content: file.content || "",
+//             }),
+//           },
+//         };
+//       }),
+//     ],
+//   },
+// };
+
+// await ddb.send(new BatchWriteItemCommand(params)).catch((r) => {
+//   console.error(r);
+// });

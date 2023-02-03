@@ -77,19 +77,19 @@ export const importCode = ApiHandler(async () => {
     //!SECTION
 
     for (let appPackageOne of inboundAppPackages) {
-      let newPackageOID = getID();
+      // let newPackageOID = getID();
 
-      appPackageOne.oid = newPackageOID;
+      // appPackageOne.oid = newPackageOID;
 
       for (let modu of appPackageOne.modules) {
-        let newModuOID = getID();
+        // let newModuOID = getID();
         let codeFilesData = JSON.parse(JSON.stringify(modu.files));
         modu.files = [];
-        modu.oid = newModuOID;
+        // modu.oid = newModuOID;
 
         for (let file of codeFilesData) {
-          file.packageOID = newPackageOID;
-          file.moduleOID = newModuOID;
+          file.packageOID = appPackageOne.oid;
+          file.moduleOID = modu.oid;
           await ddb.send(
             new PutItemCommand({
               TableName: AppCodeFile,
@@ -124,18 +124,18 @@ export const importCode = ApiHandler(async () => {
 
       appVersionObject.appPackages.push(appPackageOne);
 
+      await ddb.send(
+        new PutItemCommand({
+          TableName: AppVersion,
+          Item: marshall(appVersionObject),
+        })
+      );
+
       await new Promise((res) => {
         //!SECTION
         setTimeout(res, 50);
       });
     }
-
-    await ddb.send(
-      new PutItemCommand({
-        TableName: AppVersion,
-        Item: marshall(appVersionObject),
-      })
-    );
 
     await new Promise((res) => {
       //!SECTION

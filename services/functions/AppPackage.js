@@ -98,8 +98,8 @@ export const importCode = ApiHandler(async () => {
                 userID: session.properties.userID,
                 createdAt: new Date().getTime(),
 
-                appGroupID: appVersionObject.appGroupID,
-                appVersionID: appVersionObject.oid,
+                appGroupID: reqBodyJson.appGroupID,
+                appVersionID: reqBodyJson.appVersionID,
 
                 // filter for each module
                 packageOID: file.packageOID,

@@ -88,8 +88,8 @@ export const importCode = ApiHandler(async () => {
         // modu.oid = newModuOID;
 
         for (let file of codeFilesData) {
-          file.packageOID = appPackageOne.oid;
-          file.moduleOID = modu.oid;
+          // file.packageOID = appPackageOne.oid;
+          // file.moduleOID = modu.oid;
           await ddb.send(
             new PutItemCommand({
               TableName: AppCodeFile,

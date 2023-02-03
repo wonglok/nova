@@ -221,9 +221,9 @@ export const remove = ApiHandler(async () => {
   }
 
   // // Check user is authenticated
-  // if (session.type !== "user") {
-  //   throw new Error("Not authenticated");
-  // }
+  if (session.type !== "user") {
+    throw new Error("Not authenticated");
+  }
 
   const userID = session.properties.userID;
 
@@ -237,27 +237,27 @@ export const remove = ApiHandler(async () => {
 
   //
 
-  let data = await ddb.send(
-    new GetItemCommand({
+  // let data = await ddb.send(
+  //   new GetItemCommand({
+  //     TableName: ThisTableName,
+  //     Key: {
+  //       oid: { S: `${oid}` },
+  //     },
+  //   })
+  // );
+
+  // let dataItem = unmarshall(data.Item) || { userID: "" };
+
+  // if (dataItem.userID === session?.properties?.userID) {
+  await ddb.send(
+    new DeleteItemCommand({
       TableName: ThisTableName,
       Key: {
         oid: { S: `${oid}` },
       },
     })
   );
-
-  let dataItem = unmarshall(data.Item) || { userID: "" };
-
-  if (dataItem.userID === session?.properties?.userID) {
-    await ddb.send(
-      new DeleteItemCommand({
-        TableName: ThisTableName,
-        Key: {
-          oid: { S: `${oid}` },
-        },
-      })
-    );
-  }
+  // }
 
   return {
     statusCode: 200,
